@@ -1,0 +1,6 @@
+{
+  "installCommand": "pnpm install",
+  "buildCommand": "cp -r data frontend/static/data && pnpm --filter frontend run build",
+  "outputDirectory": "frontend/build",
+  "framework": null
+}

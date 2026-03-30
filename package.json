@@ -5,6 +5,7 @@
   "description": "Financial market data, analysis, and visualization",
   "license": "MIT",
   "engines": { "node": ">=20", "pnpm": ">=9" },
+  "packageManager": "pnpm@9.0.0",
   "scripts": {
     "fetch": "pnpm --filter fetcher run fetch",
     "dev": "pnpm --filter frontend run dev",
