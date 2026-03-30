@@ -1,0 +1,76 @@
+{
+  "version": "0.1.0",
+  "updatedAt": "2024-01-01T00:00:00Z",
+  "datasets": [
+    {
+      "ticker": "AAPL",
+      "name": "Apple Inc.",
+      "description": "Apple Inc. common stock (NASDAQ: AAPL)",
+      "currency": "USD",
+      "source": "yahoo",
+      "seriesType": "price",
+      "startDate": "2006-01-03",
+      "path": "data/prices/AAPL.csv"
+    },
+    {
+      "ticker": "GOOGL",
+      "name": "Alphabet Inc.",
+      "description": "Alphabet Inc. (Google) Class A common stock (NASDAQ: GOOGL)",
+      "currency": "USD",
+      "source": "yahoo",
+      "seriesType": "price",
+      "startDate": "2006-01-03",
+      "path": "data/prices/GOOGL.csv"
+    },
+    {
+      "ticker": "KO",
+      "name": "Coca-Cola Co.",
+      "description": "The Coca-Cola Company common stock (NYSE: KO)",
+      "currency": "USD",
+      "source": "yahoo",
+      "seriesType": "price",
+      "startDate": "2006-01-03",
+      "path": "data/prices/KO.csv"
+    },
+    {
+      "ticker": "PEP",
+      "name": "PepsiCo Inc.",
+      "description": "PepsiCo Inc. common stock (NASDAQ: PEP)",
+      "currency": "USD",
+      "source": "yahoo",
+      "seriesType": "price",
+      "startDate": "2006-01-03",
+      "path": "data/prices/PEP.csv"
+    },
+    {
+      "ticker": "GC=F",
+      "name": "Gold Futures",
+      "description": "COMEX Gold Futures, front-month continuous contract",
+      "currency": "USD",
+      "source": "yahoo",
+      "seriesType": "price",
+      "startDate": "2006-01-03",
+      "path": "data/prices/GC=F.csv"
+    },
+    {
+      "ticker": "CL=F",
+      "name": "WTI Crude Oil Futures",
+      "description": "NYMEX WTI Light Sweet Crude Oil Futures, front-month continuous contract",
+      "currency": "USD",
+      "source": "yahoo",
+      "seriesType": "price",
+      "startDate": "2006-01-03",
+      "path": "data/prices/CL=F.csv"
+    },
+    {
+      "ticker": "CPIAUCSL",
+      "name": "US CPI (All Urban Consumers, Seasonally Adjusted)",
+      "description": "Consumer Price Index for All Urban Consumers, seasonally adjusted. Published by the U.S. Bureau of Labor Statistics, retrieved via FRED (Federal Reserve Bank of St. Louis).",
+      "currency": "INDEX",
+      "source": "fred",
+      "seriesType": "index",
+      "startDate": "2006-01-01",
+      "path": "data/indices/CPI.csv"
+    }
+  ]
+}

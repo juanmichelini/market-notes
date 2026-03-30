@@ -1,0 +1,18 @@
+{
+  "name": "market-notes",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Financial market data, analysis, and visualization",
+  "license": "MIT",
+  "engines": { "node": ">=20", "pnpm": ">=9" },
+  "scripts": {
+    "fetch": "pnpm --filter fetcher run fetch",
+    "dev": "pnpm --filter frontend run dev",
+    "build": "pnpm --filter frontend run build",
+    "test": "pnpm --filter core run test",
+    "typecheck": "pnpm -r run typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
