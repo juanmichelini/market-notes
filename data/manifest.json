@@ -9,7 +9,7 @@
       "currency": "USD",
       "source": "yahoo",
       "seriesType": "price",
-      "startDate": "2006-01-03",
+      "startDate": "1980-12-12",
       "path": "data/prices/AAPL.csv"
     },
     {
@@ -19,7 +19,7 @@
       "currency": "USD",
       "source": "yahoo",
       "seriesType": "price",
-      "startDate": "2006-01-03",
+      "startDate": "2004-08-19",
       "path": "data/prices/GOOGL.csv"
     },
     {
@@ -29,7 +29,7 @@
       "currency": "USD",
       "source": "yahoo",
       "seriesType": "price",
-      "startDate": "2006-01-03",
+      "startDate": "1962-01-02",
       "path": "data/prices/KO.csv"
     },
     {
@@ -39,7 +39,7 @@
       "currency": "USD",
       "source": "yahoo",
       "seriesType": "price",
-      "startDate": "2006-01-03",
+      "startDate": "1972-06-01",
       "path": "data/prices/PEP.csv"
     },
     {
@@ -49,7 +49,7 @@
       "currency": "USD",
       "source": "yahoo",
       "seriesType": "price",
-      "startDate": "2006-01-03",
+      "startDate": "2000-08-30",
       "path": "data/prices/GC=F.csv"
     },
     {
@@ -59,7 +59,7 @@
       "currency": "USD",
       "source": "yahoo",
       "seriesType": "price",
-      "startDate": "2006-01-03",
+      "startDate": "2000-08-23",
       "path": "data/prices/CL=F.csv"
     },
     {
