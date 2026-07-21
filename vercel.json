@@ -1,6 +1,6 @@
 {
   "installCommand": "npx pnpm@9 install",
-  "buildCommand": "mkdir -p frontend/static && cp -r data frontend/static/data && npx pnpm@9 --filter frontend run build",
+  "buildCommand": "mkdir -p frontend/static && cp -r data frontend/static/data && npx pnpm@9 --filter core run build && npx pnpm@9 --filter frontend run build",
   "outputDirectory": "frontend/build",
   "framework": null
 }
