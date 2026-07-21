@@ -1,12 +1,14 @@
 <script lang="ts">
   import { onMount } from "svelte"
-  import type { Manifest, DatasetMeta, PriceSeries } from "@market-notes/core"
-  import { loadManifest, loadPriceSeries } from "$lib/data.js"
+  import type { Manifest, DatasetMeta, PriceSeries, IndexSeries } from "@market-notes/core"
+  import { loadManifest, loadPriceSeries, loadIndexSeries } from "$lib/data.js"
   import PriceChart from "$lib/charts/PriceChart.svelte"
+  import IndexChart from "$lib/charts/IndexChart.svelte"
 
   let manifest: Manifest | null = null
   let selectedDataset: DatasetMeta | null = null
   let priceSeries: PriceSeries = []
+  let indexSeries: IndexSeries = []
   let loadingManifest = true
   let loadingData = false
   let manifestError: string | null = null
@@ -23,16 +25,17 @@
   })
 
   async function selectDataset(dataset: DatasetMeta) {
-    if (dataset.seriesType !== "price") {
-      // Index series are not displayed as price charts in v0.1
-      return
-    }
     selectedDataset = dataset
     priceSeries = []
+    indexSeries = []
     dataError = null
     loadingData = true
     try {
-      priceSeries = await loadPriceSeries(dataset.path)
+      if (dataset.seriesType === "price") {
+        priceSeries = await loadPriceSeries(dataset.path)
+      } else {
+        indexSeries = await loadIndexSeries(dataset.path)
+      }
     } catch (err) {
       dataError = err instanceof Error ? err.message : String(err)
     } finally {
@@ -66,7 +69,6 @@
             class:active={selectedDataset?.ticker === dataset.ticker}
             class:index-type={dataset.seriesType === "index"}
             on:click={() => selectDataset(dataset)}
-            disabled={dataset.seriesType === "index"}
             title={dataset.description}
           >
             <span class="ticker">{dataset.ticker}</span>
@@ -82,7 +84,7 @@
       <p class="status">Loading...</p>
     {:else if dataError}
       <p class="error">{dataError}</p>
-    {:else if selectedDataset && priceSeries.length > 0}
+    {:else if selectedDataset && selectedDataset.seriesType === "price" && priceSeries.length > 0}
       <PriceChart
         series={priceSeries}
         title="{selectedDataset.name} ({selectedDataset.ticker})"
@@ -92,7 +94,17 @@
         {priceSeries[0]?.date ?? ""} to {priceSeries[priceSeries.length - 1]?.date ?? ""}
         &middot; Source: {selectedDataset.source === "yahoo" ? "Yahoo Finance" : "FRED"}
       </p>
-    {:else if selectedDataset && priceSeries.length === 0 && !loadingData}
+    {:else if selectedDataset && selectedDataset.seriesType === "index" && indexSeries.length > 0}
+      <IndexChart
+        series={indexSeries}
+        title="{selectedDataset.name} ({selectedDataset.ticker})"
+      />
+      <p class="meta">
+        {indexSeries.length} observations &middot;
+        {indexSeries[0]?.date ?? ""} to {indexSeries[indexSeries.length - 1]?.date ?? ""}
+        &middot; Source: FRED
+      </p>
+    {:else if selectedDataset && !loadingData}
       <p class="status">
         No data available for {selectedDataset.ticker}. Run <code>pnpm fetch</code> to populate the data files.
       </p>
@@ -167,12 +179,7 @@
     background: #dbeafe;
   }
 
-  .instrument-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .ticker {
+.ticker {
     font-size: 0.85rem;
     font-weight: 700;
     color: #1d4ed8;
