@@ -16,7 +16,7 @@ import { fetchIndexSeries } from "./sources/fred.js"
 import { writePriceSeries, writeIndexSeries } from "./writer.js"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const ROOT = resolve(__dirname, "../../..")
+const ROOT = resolve(__dirname, "../..")
 const MANIFEST_PATH = resolve(ROOT, "data/manifest.json")
 
 const FRED_API_KEY = process.env["FRED_API_KEY"]
@@ -25,7 +25,6 @@ if (!FRED_API_KEY) {
   process.exit(1)
 }
 
-const START_DATE = "2006-01-01"
 const END_DATE = new Date().toISOString().slice(0, 10)
 
 async function main(): Promise<void> {
@@ -35,15 +34,16 @@ async function main(): Promise<void> {
   let errors = 0
   for (const dataset of manifest.datasets) {
     const filePath = resolve(ROOT, dataset.path)
+    const startDate = dataset.startDate
     try {
       if (dataset.seriesType === "price") {
-        console.log(`Fetching ${dataset.ticker} from Yahoo Finance...`)
-        const series = await fetchPriceSeries(dataset.ticker, START_DATE, END_DATE)
+        console.log(`Fetching ${dataset.ticker} from Yahoo Finance (from ${startDate})...`)
+        const series = await fetchPriceSeries(dataset.ticker, startDate, END_DATE)
         await writePriceSeries(series, filePath)
         console.log(`  ✓ ${series.length} rows → ${dataset.path}`)
       } else if (dataset.seriesType === "index" && dataset.source === "fred") {
-        console.log(`Fetching ${dataset.ticker} from FRED...`)
-        const series = await fetchIndexSeries(dataset.ticker, START_DATE, END_DATE, FRED_API_KEY)
+        console.log(`Fetching ${dataset.ticker} from FRED (from ${startDate})...`)
+        const series = await fetchIndexSeries(dataset.ticker, startDate, END_DATE, FRED_API_KEY)
         await writeIndexSeries(series, filePath)
         console.log(`  ✓ ${series.length} rows → ${dataset.path}`)
       }
