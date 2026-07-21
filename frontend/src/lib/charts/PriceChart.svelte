@@ -34,6 +34,7 @@
       date: parseDate(row.date),
       open: row.ohlcv.open,
       close: row.ohlcv.close,
+      adjClose: row.ohlcv.adjClose,
     }))
 
     // Scales
@@ -42,7 +43,7 @@
       .domain(d3.extent(data, (d) => d.date) as [Date, Date])
       .range([0, innerWidth])
 
-    const allPrices = data.flatMap((d) => [d.open, d.close]).filter(isFinite)
+    const allPrices = data.flatMap((d) => [d.open, d.close, d.adjClose]).filter(isFinite)
     const yMin = d3.min(allPrices) ?? 0
     const yMax = d3.max(allPrices) ?? 1
     const yPad = (yMax - yMin) * 0.05
@@ -110,11 +111,11 @@
     root.select(".grid .domain").remove()
 
     // Line generators
-    const openLine = d3
-      .line<{ date: Date; open: number }>()
+    const adjCloseLine = d3
+      .line<{ date: Date; adjClose: number }>()
       .x((d) => xScale(d.date))
-      .y((d) => yScale(d.open))
-      .defined((d) => isFinite(d.open))
+      .y((d) => yScale(d.adjClose))
+      .defined((d) => isFinite(d.adjClose))
 
     const closeLine = d3
       .line<{ date: Date; close: number }>()
@@ -122,65 +123,80 @@
       .y((d) => yScale(d.close))
       .defined((d) => isFinite(d.close))
 
+    const openLine = d3
+      .line<{ date: Date; open: number }>()
+      .x((d) => xScale(d.date))
+      .y((d) => yScale(d.open))
+      .defined((d) => isFinite(d.open))
+
     // Open price line (dashed, muted)
     root
       .append("path")
       .datum(data)
       .attr("fill", "none")
-      .attr("stroke", "#94a3b8")
-      .attr("stroke-width", 1.5)
+      .attr("stroke", "#cbd5e1")
+      .attr("stroke-width", 1)
       .attr("stroke-dasharray", "4,3")
       .attr("d", openLine)
 
-    // Close price line (solid, primary)
+    // Close price line (dashed, muted)
+    root
+      .append("path")
+      .datum(data)
+      .attr("fill", "none")
+      .attr("stroke", "#94a3b8")
+      .attr("stroke-width", 1)
+      .attr("stroke-dasharray", "4,3")
+      .attr("d", closeLine)
+
+    // Adj Close line (solid, primary)
     root
       .append("path")
       .datum(data)
       .attr("fill", "none")
       .attr("stroke", "#2563eb")
       .attr("stroke-width", 2)
-      .attr("d", closeLine)
+      .attr("d", adjCloseLine)
 
     // Legend
     const legend = root
       .append("g")
-      .attr("transform", `translate(${innerWidth - 120}, 8)`)
+      .attr("transform", `translate(${innerWidth - 140}, 8)`)
+
+    // Adj Close legend entry
+    legend
+      .append("line")
+      .attr("x1", 0).attr("x2", 20).attr("y1", 6).attr("y2", 6)
+      .attr("stroke", "#2563eb").attr("stroke-width", 2)
+
+    legend
+      .append("text")
+      .attr("x", 26).attr("y", 10)
+      .attr("font-size", "11px").attr("fill", "#374151")
+      .text("Adj Close")
 
     // Close legend entry
     legend
       .append("line")
-      .attr("x1", 0)
-      .attr("x2", 20)
-      .attr("y1", 6)
-      .attr("y2", 6)
-      .attr("stroke", "#2563eb")
-      .attr("stroke-width", 2)
+      .attr("x1", 0).attr("x2", 20).attr("y1", 22).attr("y2", 22)
+      .attr("stroke", "#94a3b8").attr("stroke-width", 1).attr("stroke-dasharray", "4,3")
 
     legend
       .append("text")
-      .attr("x", 26)
-      .attr("y", 10)
-      .attr("font-size", "11px")
-      .attr("fill", "#374151")
+      .attr("x", 26).attr("y", 26)
+      .attr("font-size", "11px").attr("fill", "#374151")
       .text("Close")
 
     // Open legend entry
     legend
       .append("line")
-      .attr("x1", 0)
-      .attr("x2", 20)
-      .attr("y1", 22)
-      .attr("y2", 22)
-      .attr("stroke", "#94a3b8")
-      .attr("stroke-width", 1.5)
-      .attr("stroke-dasharray", "4,3")
+      .attr("x1", 0).attr("x2", 20).attr("y1", 38).attr("y2", 38)
+      .attr("stroke", "#cbd5e1").attr("stroke-width", 1).attr("stroke-dasharray", "4,3")
 
     legend
       .append("text")
-      .attr("x", 26)
-      .attr("y", 26)
-      .attr("font-size", "11px")
-      .attr("fill", "#374151")
+      .attr("x", 26).attr("y", 42)
+      .attr("font-size", "11px").attr("fill", "#374151")
       .text("Open")
   }
 
