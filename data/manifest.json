@@ -43,6 +43,26 @@
       "path": "data/prices/PEP.csv"
     },
     {
+      "ticker": "^GSPC",
+      "name": "S&P 500",
+      "description": "S&P 500 index — broad measure of US large-cap equity market performance.",
+      "currency": "USD",
+      "source": "yahoo",
+      "seriesType": "price",
+      "startDate": "1928-01-03",
+      "path": "data/prices/GSPC.csv"
+    },
+    {
+      "ticker": "DCOILWTICO",
+      "name": "WTI Crude Oil",
+      "description": "Crude Oil Prices: West Texas Intermediate (WTI), Cushing Oklahoma. Daily spot price in USD per barrel. Retrieved via FRED.",
+      "currency": "USD",
+      "source": "fred",
+      "seriesType": "index",
+      "startDate": "1986-01-02",
+      "path": "data/indices/OIL.csv"
+    },
+    {
       "ticker": "GC=F",
       "name": "Gold Futures",
       "description": "COMEX Gold Futures, front-month continuous contract",

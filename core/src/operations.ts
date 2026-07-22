@@ -25,7 +25,7 @@
  */
 
 import type { ISODate, PriceSeries, IndexSeries, IndexRow } from "./types.js"
-import { mapPrices } from "./series.js"
+import { mapPrices, alignDates } from "./series.js"
 
 /**
  * Constructs a forward-filled mapping from dates to index values.
@@ -222,5 +222,69 @@ export function rollingMean(series: IndexSeries, window: number): IndexSeries {
       sum += series[j]!.value
     }
     return { date: row.date, value: sum / window }
+  })
+}
+
+/**
+ * Divides two PriceSeries element-wise on aligned dates, returning the
+ * ratio of their `adjClose` fields as an IndexSeries.
+ *
+ * For each date t present in both series:
+ *   ratio(t) = adjClose_a(t) / adjClose_b(t)
+ *
+ * Dates present in only one series are dropped (inner join).
+ * Division by zero or NaN produces NaN in the output.
+ *
+ * @param a - The numerator price series.
+ * @param b - The denominator price series.
+ * @returns An IndexSeries of adjClose(a) / adjClose(b) on shared dates.
+ */
+export function divideSeries(a: PriceSeries, b: PriceSeries): IndexSeries {
+  const [alignedA, alignedB] = alignDates(a, b)
+  return alignedA.map((rowA, i) => {
+    const rowB = alignedB[i]!
+    const value = rowB.ohlcv.adjClose === 0 ? NaN : rowA.ohlcv.adjClose / rowB.ohlcv.adjClose
+    return { date: rowA.date, value: isFinite(value) ? value : NaN }
+  })
+}
+
+/**
+ * Detects polarity changes in an IndexSeries — points where the rolling
+ * trend direction flips from rising to falling or vice versa.
+ *
+ * The trend at position i is determined by comparing the rolling mean
+ * centered at i to the rolling mean at i - 1. A polarity change occurs
+ * when the sign of (mean[i] - mean[i-1]) differs from the sign of
+ * (mean[i-1] - mean[i-2]).
+ *
+ * Returns an IndexSeries of the same length where:
+ *   - value = 1  if trend flipped from falling to rising (bullish crossover)
+ *   - value = -1 if trend flipped from rising to falling (bearish crossover)
+ *   - value = 0  if no polarity change
+ *   - value = NaN for the first `window` observations (insufficient data)
+ *
+ * @param series - The input scalar series.
+ * @param window - Rolling mean window size for smoothing. Must be >= 1.
+ * @throws {Error} if window < 1.
+ * @returns An IndexSeries of polarity change signals.
+ */
+export function polarityChanges(series: IndexSeries, window: number): IndexSeries {
+  if (window < 1) {
+    throw new Error(`polarityChanges: window must be >= 1, got ${window}.`)
+  }
+  const smoothed = rollingMean(series, window)
+  return smoothed.map((row, i) => {
+    if (i < 2 || !isFinite(smoothed[i]!.value) || !isFinite(smoothed[i - 1]!.value) || !isFinite(smoothed[i - 2]!.value)) {
+      return { date: row.date, value: NaN }
+    }
+    const prev2 = smoothed[i - 2]!.value
+    const prev1 = smoothed[i - 1]!.value
+    const curr  = smoothed[i]!.value
+    const prevDir = Math.sign(prev1 - prev2)
+    const currDir = Math.sign(curr  - prev1)
+    if (prevDir !== 0 && currDir !== 0 && prevDir !== currDir) {
+      return { date: row.date, value: currDir } // +1 bullish flip, -1 bearish flip
+    }
+    return { date: row.date, value: 0 }
   })
 }

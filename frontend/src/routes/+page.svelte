@@ -52,6 +52,9 @@
   <header>
     <h1>Market Notes</h1>
     <p class="tagline">Financial market data and visualization</p>
+    <nav>
+      <a href="/ratios" class="nav-link">Macro Ratios →</a>
+    </nav>
   </header>
 
   <section class="instruments">
@@ -145,6 +148,15 @@
     margin: 0;
     font-size: 0.95rem;
   }
+
+  nav { margin-top: 0.75rem; }
+
+  .nav-link {
+    font-size: 0.875rem;
+    color: #2563eb;
+    text-decoration: none;
+  }
+  .nav-link:hover { text-decoration: underline; }
 
   .instruments {
     margin-bottom: 2rem;
