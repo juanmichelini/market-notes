@@ -28,7 +28,7 @@ jobs:
         run: pnpm --filter core run build
 
       - name: Fetch market data
-        run: pnpm fetch
+        run: pnpm run fetch
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
 
