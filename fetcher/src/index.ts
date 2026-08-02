@@ -26,19 +26,27 @@ if (!FRED_API_KEY) {
 }
 
 const END_DATE = new Date().toISOString().slice(0, 10)
+const YAHOO_DELAY_MS = 5000  // 5s between Yahoo requests to avoid rate limiting
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 async function main(): Promise<void> {
   const manifestRaw = await readFile(MANIFEST_PATH, "utf8")
   const manifest = JSON.parse(manifestRaw) as Manifest
 
   let errors = 0
+  let lastYahooFetch = 0
+
   for (const dataset of manifest.datasets) {
     const filePath = resolve(ROOT, dataset.path)
     const startDate = dataset.startDate
     try {
       if (dataset.seriesType === "price") {
+        const elapsed = Date.now() - lastYahooFetch
+        if (elapsed < YAHOO_DELAY_MS) await sleep(YAHOO_DELAY_MS - elapsed)
         console.log(`Fetching ${dataset.ticker} from Yahoo Finance (from ${startDate})...`)
         const series = await fetchPriceSeries(dataset.ticker, startDate, END_DATE)
+        lastYahooFetch = Date.now()
         await writePriceSeries(series, filePath)
         console.log(`  ✓ ${series.length} rows → ${dataset.path}`)
       } else if (dataset.seriesType === "index" && dataset.source === "fred") {
