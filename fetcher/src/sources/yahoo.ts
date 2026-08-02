@@ -12,22 +12,22 @@ export async function fetchPriceSeries(
   from: string,
   to: string
 ): Promise<PriceSeries> {
-  const result = await yahooFinance.historical(sym, {
+  const result = await yahooFinance.chart(sym, {
     period1: from,
     period2: to,
     interval: "1d",
   })
 
-  const rows: PriceRow[] = result
+  const rows: PriceRow[] = result.quotes
     .filter((r) => r.open != null && r.close != null)
     .map((r) => ({
-      date: isoDate(r.date.toISOString().slice(0, 10)),
+      date: isoDate(new Date(r.date).toISOString().slice(0, 10)),
       ohlcv: {
         open: r.open ?? NaN,
         high: r.high ?? NaN,
         low: r.low ?? NaN,
         close: r.close ?? NaN,
-        adjClose: r.adjClose ?? r.close ?? NaN,
+        adjClose: r.adjclose ?? r.close ?? NaN,
         volume: r.volume ?? 0,
       },
     }))
