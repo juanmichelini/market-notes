@@ -4,7 +4,7 @@
  * Fetches historical daily OHLCV data using the yahoo-finance2 package.
  * Returns a PriceSeries sorted in ascending date order.
  */
-import { YahooFinance } from "yahoo-finance2"
+import YahooFinance from "yahoo-finance2"
 const yahooFinance = new YahooFinance()
 import { type PriceSeries, type PriceRow, isoDate } from "@market-notes/core"
 
