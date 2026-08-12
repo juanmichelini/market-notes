@@ -29,18 +29,22 @@
 
   onMount(async () => {
     try {
-      const [sp500, gold, oilIndex] = await Promise.all([
+      const [sp500, gold, wtiIndex, brentIndex] = await Promise.all([
         loadPriceSeries("data/prices/GSPC.csv"),
         loadPriceSeries("data/prices/GC=F.csv"),
-        loadIndexSeries("data/indices/OIL.csv"),
+        loadIndexSeries("data/indices/WTI.csv"),
+        loadIndexSeries("data/indices/BRENT.csv"),
       ])
 
-      const oil = indexToPriceSeries(oilIndex)
+      const wti   = indexToPriceSeries(wtiIndex)
+      const brent = indexToPriceSeries(brentIndex)
 
       ratios = [
-        { label: "Gold / SP500",  series: divideSeries(gold, sp500), color: "#f59e0b" },
-        { label: "Oil / SP500",   series: divideSeries(oil,  sp500), color: "#3b82f6" },
-        { label: "Gold / Oil",    series: divideSeries(gold, oil),   color: "#8b5cf6" },
+        { label: "Gold / SP500",  series: divideSeries(gold,  sp500), color: "#f59e0b" },
+        { label: "WTI / SP500",   series: divideSeries(wti,   sp500), color: "#3b82f6" },
+        { label: "Brent / SP500", series: divideSeries(brent, sp500), color: "#0ea5e9" },
+        { label: "Gold / Oil",    series: divideSeries(gold,  wti),   color: "#8b5cf6" },
+        { label: "WTI / Brent",   series: divideSeries(wti,   brent), color: "#f97316" },
       ]
     } catch (err) {
       error = err instanceof Error ? err.message : String(err)
@@ -61,7 +65,8 @@
     <p class="tagline">
       Gold/SP500 — trust in the system &nbsp;·&nbsp;
       Oil/SP500 — real vs speculative growth &nbsp;·&nbsp;
-      Gold/Oil — economic activity
+      Gold/Oil — economic activity &nbsp;·&nbsp;
+      WTI/Brent — US vs global oil pricing spread
     </p>
   </header>
 
