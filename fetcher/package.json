@@ -12,6 +12,7 @@
     "yahoo-finance2": "^4.0.0"
   },
   "devDependencies": {
+    "@types/node": "^22",
     "tsx": "^4.7.0",
     "typescript": "^5.4.0"
   }
