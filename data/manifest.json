@@ -60,7 +60,17 @@
       "source": "fred",
       "seriesType": "index",
       "startDate": "1986-01-02",
-      "path": "data/indices/OIL.csv"
+      "path": "data/indices/WTI.csv"
+    },
+    {
+      "ticker": "DCOILBRENTEU",
+      "name": "Brent Crude Oil",
+      "description": "Crude Oil Prices: Brent - Europe (North Sea). Daily spot price in USD per barrel. Retrieved via FRED.",
+      "currency": "USD",
+      "source": "fred",
+      "seriesType": "index",
+      "startDate": "1987-05-20",
+      "path": "data/indices/BRENT.csv"
     },
     {
       "ticker": "GC=F",

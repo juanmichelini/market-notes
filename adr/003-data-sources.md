@@ -22,5 +22,6 @@ We need reliable, free, programmatically accessible sources for (1) daily OHLCV 
 ## Consequences
 
 - Two distinct data types emerge naturally from these sources: `PriceSeries` (OHLCV, from Yahoo) and `IndexSeries` (scalar, from FRED). This type distinction is encoded in `core/src/types.ts` and prevents passing CPI data where OHLCV is expected.
+- FRED also supplies the crude oil spot benchmarks (`DCOILWTICO` for WTI, `DCOILBRENTEU` for Brent) and other commodity price series; the same adapter covers them.
 - The FRED API key must be stored as a GitHub Actions secret (`FRED_API_KEY`) and as a local environment variable for development.
 - If Yahoo Finance changes its undocumented API (as it has historically), `fetcher/src/sources/yahoo.ts` is the only file that needs updating.
