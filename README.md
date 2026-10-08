@@ -26,6 +26,7 @@ Data is fetched nightly via GitHub Actions, stored as plain CSV files under vers
 | CL=F     | WTI Crude Oil                               | Yahoo Finance | 2006 |
 | ZC=F     | Corn Futures (CBOT, US cents/bushel)        | Yahoo Finance | 2000 |
 | PMAIZMTUSDM | Maize, US Gulf export price (USD/t, monthly) | FRED       | 1992 |
+| ZR=F     | Rough Rice Futures (CBOT, USD/cwt)          | Yahoo Finance | 1999 |
 | CPIAUCSL | US CPI (All Urban Consumers, Seas. Adj.)    | FRED          | 2006 |
 
 ---

@@ -103,6 +103,16 @@
       "path": "data/indices/MAIZE_USGULF.csv"
     },
     {
+      "ticker": "ZR=F",
+      "name": "Rough Rice Futures",
+      "description": "CBOT Rough Rice Futures, front-month continuous contract. Quoted in US dollars per hundredweight (cwt) of rough (paddy) rice.",
+      "currency": "USD",
+      "source": "yahoo",
+      "seriesType": "price",
+      "startDate": "1999-09-14",
+      "path": "data/prices/ZR=F.csv"
+    },
+    {
       "ticker": "CPIAUCSL",
       "name": "US CPI (All Urban Consumers, Seasonally Adjusted)",
       "description": "Consumer Price Index for All Urban Consumers, seasonally adjusted. Published by the U.S. Bureau of Labor Statistics, retrieved via FRED (Federal Reserve Bank of St. Louis).",
