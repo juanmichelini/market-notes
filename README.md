@@ -38,6 +38,7 @@ Data is fetched nightly via GitHub Actions, stored as plain CSV files under vers
 | WPU011303 | Sweet potatoes, US producer price index (1982=100, monthly) | FRED | 1947 |
 | WFP:COD:CASSAVA_FLOUR:LUBUMBASHI | Cassava flour, DR Congo, Lubumbashi retail (CDF/kg, monthly) | WFP via HDX | 2008 |
 | WFP:NGA:YAM:POTISKUM | Yam, Nigeria, Potiskum retail (NGN/2.5 kg, monthly) | WFP via HDX | 2015 |
+| WFP:COL:PLANTAIN:MEDELLIN | Plantain, Colombia, Medellín wholesale (COP/kg, monthly) | WFP via HDX | 2013 |
 | CPIAUCSL | US CPI (All Urban Consumers, Seas. Adj.)    | FRED          | 2006 |
 
 ---
