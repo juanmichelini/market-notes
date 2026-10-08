@@ -118,10 +118,11 @@ export function deflate(
 ): PriceSeries {
   if (prices.length === 0) return prices
 
-  const dates = prices.map((r) => r.date)
-  const filled = forwardFillIndex(index, dates)
-
+  // t₀ need not be a trading day in `prices`, so it is forward-filled too.
   const t0 = baseDate ?? prices[0]!.date
+  const dates = prices.map((r) => r.date)
+  const filled = forwardFillIndex(index, [...dates, t0])
+
   const baseIndexValue = filled.get(t0)
   if (baseIndexValue === undefined) {
     throw new Error(

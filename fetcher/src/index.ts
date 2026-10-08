@@ -20,7 +20,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(__dirname, "../..")
 const MANIFEST_PATH = resolve(ROOT, "data/manifest.json")
 
-const FRED_API_KEY = process.env["FRED_API_KEY"]
+const FRED_API_KEY = process.env["FRED_API_KEY"] ?? ""
 if (!FRED_API_KEY) {
   console.error("Error: FRED_API_KEY environment variable is not set.")
   process.exit(1)
