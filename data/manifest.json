@@ -203,6 +203,23 @@
       "path": "data/indices/SWEETPOTATO_US_PPI.csv"
     },
     {
+      "ticker": "WFP:COD:CASSAVA_FLOUR:LUBUMBASHI",
+      "name": "Cassava flour (DR Congo, Lubumbashi)",
+      "description": "WFP retail price of cassava flour in Lubumbashi market (Haut-Katanga), Democratic Republic of the Congo, monthly, Congolese francs per kg. Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "CDF",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2008-05-15",
+      "path": "data/indices/CASSAVA_COD_LUBUMBASHI.csv",
+      "wfp": {
+        "country": "democratic-republic-of-the-congo",
+        "market": "Lubumbashi",
+        "commodity": "Cassava flour",
+        "unit": "KG",
+        "pricetype": "Retail"
+      }
+    },
+    {
       "ticker": "CPIAUCSL",
       "name": "US CPI (All Urban Consumers, Seasonally Adjusted)",
       "description": "Consumer Price Index for All Urban Consumers, seasonally adjusted. Published by the U.S. Bureau of Labor Statistics, retrieved via FRED (Federal Reserve Bank of St. Louis).",

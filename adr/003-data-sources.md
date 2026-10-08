@@ -1,6 +1,6 @@
 # ADR-003: Use Yahoo Finance and FRED as data sources
 
-**Status:** Accepted
+**Status:** Accepted (extended by [ADR-005](./005-wfp-food-prices.md): WFP food prices for non-traded staples)
 **Date:** 2024-01-01
 
 ## Context

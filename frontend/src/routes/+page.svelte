@@ -5,6 +5,12 @@
   import PriceChart from "$lib/charts/PriceChart.svelte"
   import IndexChart from "$lib/charts/IndexChart.svelte"
 
+  const SOURCE_LABELS: Record<DatasetMeta["source"], string> = {
+    yahoo: "Yahoo Finance",
+    fred: "FRED",
+    wfp: "WFP via HDX (CC BY-IGO)",
+  }
+
   let manifest: Manifest | null = null
   let selectedDataset: DatasetMeta | null = null
   let priceSeries: PriceSeries = []
@@ -95,7 +101,7 @@
       <p class="meta">
         {priceSeries.length} trading days &middot;
         {priceSeries[0]?.date ?? ""} to {priceSeries[priceSeries.length - 1]?.date ?? ""}
-        &middot; Source: {selectedDataset.source === "yahoo" ? "Yahoo Finance" : "FRED"}
+        &middot; Source: {SOURCE_LABELS[selectedDataset.source]}
       </p>
     {:else if selectedDataset && selectedDataset.seriesType === "index" && indexSeries.length > 0}
       <IndexChart
@@ -105,7 +111,7 @@
       <p class="meta">
         {indexSeries.length} observations &middot;
         {indexSeries[0]?.date ?? ""} to {indexSeries[indexSeries.length - 1]?.date ?? ""}
-        &middot; Source: FRED
+        &middot; Source: {SOURCE_LABELS[selectedDataset.source]}
       </p>
     {:else if selectedDataset && !loadingData}
       <p class="status">

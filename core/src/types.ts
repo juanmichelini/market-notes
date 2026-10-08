@@ -123,19 +123,39 @@ export interface IndexRow {
 export type IndexSeries = ReadonlyArray<IndexRow>
 
 /**
+ * Selects one market-level price series from a WFP food prices dataset
+ * published on the Humanitarian Data Exchange (HDX). See ADR-005.
+ *
+ * A WFP country dataset holds many series — one per (market, commodity,
+ * unit, price type) — so all four fields are needed to identify a single
+ * geographic price point. Field values match the dataset's CSV columns
+ * exactly (e.g. commodity "Cassava flour", unit "KG", pricetype "Retail").
+ */
+export interface WfpQuery {
+  readonly country: string        // HDX dataset slug suffix, e.g. "nigeria" for "wfp-food-prices-for-nigeria"
+  readonly market: string
+  readonly commodity: string
+  readonly unit: string
+  readonly pricetype: "Retail" | "Wholesale"
+}
+
+/**
  * Metadata for a single dataset, as recorded in `data/manifest.json`.
  * This record is the authoritative description of a dataset's provenance,
  * schema, and location on disk.
+ *
+ * `wfp` is present if and only if `source` is "wfp".
  */
 export interface DatasetMeta {
   readonly ticker: Ticker
   readonly name: string
   readonly description: string
   readonly currency: string       // ISO 4217 code, e.g. "USD"; "INDEX" for dimensionless series
-  readonly source: "yahoo" | "fred"
+  readonly source: "yahoo" | "fred" | "wfp"
   readonly seriesType: "price" | "index"
   readonly startDate: ISODate
   readonly path: string           // relative path from repository root
+  readonly wfp?: WfpQuery
 }
 
 /**
