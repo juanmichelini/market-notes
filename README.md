@@ -23,7 +23,9 @@ Data is fetched nightly via GitHub Actions, stored as plain CSV files under vers
 | KO       | Coca-Cola Co.                               | Yahoo Finance | 2006 |
 | PEP      | PepsiCo Inc.                                | Yahoo Finance | 2006 |
 | GC=F     | Gold Futures                                | Yahoo Finance | 2006 |
-| CL=F     | WTI Crude Oil                               | Yahoo Finance | 2006 |
+| CL=F     | WTI Crude Oil Futures (NYMEX)               | Yahoo Finance | 2000 |
+| DCOILWTICO | WTI crude oil spot, Cushing OK (USD/bbl, daily) | FRED        | 1986 |
+| DCOILBRENTEU | Brent crude oil spot, North Sea (USD/bbl, daily) | FRED      | 1987 |
 | ZC=F     | Corn Futures (CBOT, US cents/bushel)        | Yahoo Finance | 2000 |
 | PMAIZMTUSDM | Maize, US Gulf export price (USD/t, monthly) | FRED       | 1992 |
 | ZR=F     | Rough Rice Futures (CBOT, USD/cwt)          | Yahoo Finance | 1999 |
