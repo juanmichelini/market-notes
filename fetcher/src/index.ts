@@ -13,6 +13,7 @@ import { fileURLToPath } from "node:url"
 import { type Manifest } from "@market-notes/core"
 import { fetchPriceSeries } from "./sources/yahoo.js"
 import { fetchIndexSeries } from "./sources/fred.js"
+import { fetchWfpSeries } from "./sources/wfp.js"
 import { writePriceSeries, writeIndexSeries } from "./writer.js"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -52,6 +53,12 @@ async function main(): Promise<void> {
       } else if (dataset.seriesType === "index" && dataset.source === "fred") {
         console.log(`Fetching ${dataset.ticker} from FRED (from ${startDate})...`)
         const series = await fetchIndexSeries(dataset.ticker, startDate, END_DATE, FRED_API_KEY)
+        await writeIndexSeries(series, filePath)
+        console.log(`  ✓ ${series.length} rows → ${dataset.path}`)
+      } else if (dataset.seriesType === "index" && dataset.source === "wfp") {
+        if (!dataset.wfp) throw new Error(`Dataset ${dataset.ticker} has source "wfp" but no "wfp" query`)
+        console.log(`Fetching ${dataset.ticker} from WFP/HDX (from ${startDate})...`)
+        const series = await fetchWfpSeries(dataset.wfp, startDate, END_DATE)
         await writeIndexSeries(series, filePath)
         console.log(`  ✓ ${series.length} rows → ${dataset.path}`)
       }

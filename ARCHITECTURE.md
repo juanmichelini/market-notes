@@ -30,8 +30,8 @@ This document describes the structure, principles, and design decisions of the m
 
 ```
 Yahoo Finance API ─┐
-                   ├─► fetcher/src/sources/  ─► PriceSeries / IndexSeries (typed)
-FRED API ──────────┘         │
+FRED API ──────────┼─► fetcher/src/sources/  ─► PriceSeries / IndexSeries (typed)
+WFP via HDX ───────┘         │
                              ▼
                     fetcher/src/writer.ts ─► data/prices/*.csv
                                           ─► data/indices/*.csv

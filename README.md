@@ -36,6 +36,7 @@ Data is fetched nightly via GitHub Actions, stored as plain CSV files under vers
 | APU0000712112 | Potatoes, US average retail price (USD/lb, monthly) | FRED | 1986 |
 | WPU01130603 | Potatoes (russet), US producer price index (Dec 1991=100, monthly) | FRED | 1991 |
 | WPU011303 | Sweet potatoes, US producer price index (1982=100, monthly) | FRED | 1947 |
+| WFP:COD:CASSAVA_FLOUR:LUBUMBASHI | Cassava flour, DR Congo, Lubumbashi retail (CDF/kg, monthly) | WFP via HDX | 2008 |
 | CPIAUCSL | US CPI (All Urban Consumers, Seas. Adj.)    | FRED          | 2006 |
 
 ---
