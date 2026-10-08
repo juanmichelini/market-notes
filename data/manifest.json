@@ -193,6 +193,16 @@
       "path": "data/indices/POTATO_US_PPI.csv"
     },
     {
+      "ticker": "WPU011303",
+      "name": "Sweet potatoes (US producer price index)",
+      "description": "BLS Producer Price Index by Commodity: Farm Products: Sweet Potatoes, monthly, not seasonally adjusted. Index (1982 = 100), not a price per unit (FRED WPU011303).",
+      "currency": "INDEX",
+      "source": "fred",
+      "seriesType": "index",
+      "startDate": "1947-01-01",
+      "path": "data/indices/SWEETPOTATO_US_PPI.csv"
+    },
+    {
       "ticker": "CPIAUCSL",
       "name": "US CPI (All Urban Consumers, Seasonally Adjusted)",
       "description": "Consumer Price Index for All Urban Consumers, seasonally adjusted. Published by the U.S. Bureau of Labor Statistics, retrieved via FRED (Federal Reserve Bank of St. Louis).",
