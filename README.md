@@ -32,6 +32,7 @@ Data is fetched nightly via GitHub Actions, stored as plain CSV files under vers
 | PWHEAMTUSDM | Wheat, IMF global price (USD/t, monthly)  | FRED          | 1992 |
 | ZS=F     | Soybean Futures (CBOT, US cents/bushel)     | Yahoo Finance | 2000 |
 | PSOYBUSDM | Soybeans, IMF global price (USD/t, monthly) | FRED         | 1992 |
+| WPU012205 | Sorghum, US producer price index (Dec 1991=100, monthly) | FRED | 1991 |
 | CPIAUCSL | US CPI (All Urban Consumers, Seas. Adj.)    | FRED          | 2006 |
 
 ---

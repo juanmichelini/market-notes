@@ -163,6 +163,16 @@
       "path": "data/indices/SOYBEANS_GLOBAL.csv"
     },
     {
+      "ticker": "WPU012205",
+      "name": "Sorghum (US producer price index)",
+      "description": "BLS Producer Price Index by Commodity: Farm Products: Sorghum, monthly, not seasonally adjusted. Index (Dec 1991 = 100), not a price per unit (FRED WPU012205).",
+      "currency": "INDEX",
+      "source": "fred",
+      "seriesType": "index",
+      "startDate": "1991-12-01",
+      "path": "data/indices/SORGHUM_US_PPI.csv"
+    },
+    {
       "ticker": "CPIAUCSL",
       "name": "US CPI (All Urban Consumers, Seasonally Adjusted)",
       "description": "Consumer Price Index for All Urban Consumers, seasonally adjusted. Published by the U.S. Bureau of Labor Statistics, retrieved via FRED (Federal Reserve Bank of St. Louis).",
