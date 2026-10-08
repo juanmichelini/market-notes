@@ -143,6 +143,26 @@
       "path": "data/indices/WHEAT_GLOBAL.csv"
     },
     {
+      "ticker": "ZS=F",
+      "name": "Soybean Futures",
+      "description": "CBOT Soybean Futures, front-month continuous contract. Quoted in US cents per bushel (Yahoo currency USX).",
+      "currency": "USX",
+      "source": "yahoo",
+      "seriesType": "price",
+      "startDate": "2000-09-15",
+      "path": "data/prices/ZS=F.csv"
+    },
+    {
+      "ticker": "PSOYBUSDM",
+      "name": "Soybeans (IMF global price)",
+      "description": "IMF global price of soybeans (US export benchmark), monthly average, US dollars per metric ton (FRED PSOYBUSDM).",
+      "currency": "USD",
+      "source": "fred",
+      "seriesType": "index",
+      "startDate": "1992-01-01",
+      "path": "data/indices/SOYBEANS_GLOBAL.csv"
+    },
+    {
       "ticker": "CPIAUCSL",
       "name": "US CPI (All Urban Consumers, Seasonally Adjusted)",
       "description": "Consumer Price Index for All Urban Consumers, seasonally adjusted. Published by the U.S. Bureau of Labor Statistics, retrieved via FRED (Federal Reserve Bank of St. Louis).",
