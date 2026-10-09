@@ -8,6 +8,7 @@ import {
   type Manifest,
   type PriceSeries,
   type IndexSeries,
+  type NutritionTable,
   parsePriceCSV,
   parseIndexCSV,
 } from "@market-notes/core"
@@ -30,4 +31,10 @@ export async function loadIndexSeries(path: string): Promise<IndexSeries> {
   if (!res.ok) throw new Error(`Failed to load index series at ${path}: HTTP ${res.status}`)
   const text = await res.text()
   return parseIndexCSV(text)
+}
+
+export async function loadNutrition(): Promise<NutritionTable> {
+  const res = await fetch("/data/nutrition.json")
+  if (!res.ok) throw new Error(`Failed to load nutrition table: HTTP ${res.status}`)
+  return res.json() as Promise<NutritionTable>
 }

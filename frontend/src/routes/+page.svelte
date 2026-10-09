@@ -60,6 +60,7 @@
     <p class="tagline">Financial market data and visualization</p>
     <nav>
       <a href="/ratios" class="nav-link">Macro Ratios →</a>
+      <a href="/calories" class="nav-link">Price of a Calorie →</a>
     </nav>
   </header>
 
