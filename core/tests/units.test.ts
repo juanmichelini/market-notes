@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { KG_PER, perUnitFactor, scaleIndex, scalePrices, convertCurrency } from "../src/units.js"
+import { KG_PER, perUnitFactor, scaleIndex, scalePrices, convertCurrency, majorCurrency, toPricePerKg } from "../src/units.js"
 import { isoDate, type PriceRow, type IndexRow } from "../src/types.js"
 
 // ---------------------------------------------------------------------------
@@ -159,5 +159,47 @@ describe("convertCurrency", () => {
 
   it("returns an empty series for empty input", () => {
     expect(convertCurrency([], fx)).toHaveLength(0)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// majorCurrency
+// ---------------------------------------------------------------------------
+
+describe("majorCurrency", () => {
+  it("maps US cents (USX) to dollars with factor 0.01", () => {
+    expect(majorCurrency("USX")).toEqual({ major: "USD", factor: 0.01 })
+  })
+
+  it("maps an ordinary currency to itself with factor 1", () => {
+    expect(majorCurrency("NGN")).toEqual({ major: "NGN", factor: 1 })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// toPricePerKg
+// ---------------------------------------------------------------------------
+
+describe("toPricePerKg", () => {
+  it("converts CBOT corn from US cents per bushel to dollars per kg", () => {
+    // 500 USX/bu = $5.00 per 25.4012 kg ≈ $0.19684 per kg
+    const result = toPricePerKg([indexRow("2024-01-02", 500)], KG_PER.bushelCorn, "USX")
+    expect(result[0]!.value).toBeCloseTo(0.19684, 5)
+  })
+
+  it("divides a price per tonne by 1000", () => {
+    expect(toPricePerKg([indexRow("2024-01-15", 400)], KG_PER.tonne, "USD")[0]!.value).toBeCloseTo(0.4, 12)
+  })
+
+  it("leaves the currency amount unchanged for a price already per kg", () => {
+    expect(toPricePerKg([indexRow("2024-01-15", 120)], KG_PER.kilogram, "NGN")[0]!.value).toBe(120)
+  })
+
+  it("divides by the pack size for a price quoted per 2.5 kg", () => {
+    expect(toPricePerKg([indexRow("2024-01-15", 500)], 2.5, "NGN")[0]!.value).toBe(200)
+  })
+
+  it("throws for a non-positive pack size", () => {
+    expect(() => toPricePerKg([indexRow("2024-01-15", 1)], 0, "USD")).toThrow()
   })
 })

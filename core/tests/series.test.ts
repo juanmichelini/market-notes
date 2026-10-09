@@ -8,6 +8,7 @@ import {
   mapIndex,
   normalizePriceSeries,
   normalizeIndexSeries,
+  closeIndex,
 } from "../src/series.js"
 import { isoDate, type PriceRow, type IndexRow, type OHLCV } from "../src/types.js"
 
@@ -308,5 +309,25 @@ describe("normalizeIndexSeries", () => {
   it("throws when baseDate is not found in the series", () => {
     const series = [indexRow("2024-01-01", 100)]
     expect(() => normalizeIndexSeries(series, isoDate("2025-01-01"))).toThrow()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// closeIndex
+// ---------------------------------------------------------------------------
+
+describe("closeIndex", () => {
+  const prices = [row("2024-01-02", 10, 9), row("2024-01-03", 12, 11)]
+
+  it("takes the close, not the adjusted close", () => {
+    expect(closeIndex(prices).map((r) => r.value)).toEqual([10, 12])
+  })
+
+  it("preserves dates", () => {
+    expect(closeIndex(prices).map((r) => r.date)).toEqual(prices.map((r) => r.date))
+  })
+
+  it("preserves NaN as a missing observation", () => {
+    expect(closeIndex([row("2024-01-02", NaN)])[0]!.value).toBeNaN()
   })
 })

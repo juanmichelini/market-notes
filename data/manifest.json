@@ -100,7 +100,10 @@
       "source": "yahoo",
       "seriesType": "price",
       "startDate": "2000-07-17",
-      "path": "data/prices/ZC=F.csv"
+      "path": "data/prices/ZC=F.csv",
+      "product": "maize",
+      "form": "grain",
+      "kgPerUnit": 25.40117272
     },
     {
       "ticker": "PMAIZMTUSDM",
@@ -110,7 +113,10 @@
       "source": "fred",
       "seriesType": "index",
       "startDate": "1992-01-01",
-      "path": "data/indices/MAIZE_USGULF.csv"
+      "path": "data/indices/MAIZE_USGULF.csv",
+      "product": "maize",
+      "form": "grain",
+      "kgPerUnit": 1000
     },
     {
       "ticker": "ZR=F",
@@ -120,7 +126,10 @@
       "source": "yahoo",
       "seriesType": "price",
       "startDate": "1999-09-14",
-      "path": "data/prices/ZR=F.csv"
+      "path": "data/prices/ZR=F.csv",
+      "product": "rice",
+      "form": "rough",
+      "kgPerUnit": 45.359237
     },
     {
       "ticker": "ZW=F",
@@ -130,7 +139,10 @@
       "source": "yahoo",
       "seriesType": "price",
       "startDate": "2000-07-17",
-      "path": "data/prices/ZW=F.csv"
+      "path": "data/prices/ZW=F.csv",
+      "product": "wheat",
+      "form": "grain",
+      "kgPerUnit": 27.2155422
     },
     {
       "ticker": "KE=F",
@@ -140,7 +152,10 @@
       "source": "yahoo",
       "seriesType": "price",
       "startDate": "2000-09-21",
-      "path": "data/prices/KE=F.csv"
+      "path": "data/prices/KE=F.csv",
+      "product": "wheat",
+      "form": "grain",
+      "kgPerUnit": 27.2155422
     },
     {
       "ticker": "PWHEAMTUSDM",
@@ -150,7 +165,10 @@
       "source": "fred",
       "seriesType": "index",
       "startDate": "1992-01-01",
-      "path": "data/indices/WHEAT_GLOBAL.csv"
+      "path": "data/indices/WHEAT_GLOBAL.csv",
+      "product": "wheat",
+      "form": "grain",
+      "kgPerUnit": 1000
     },
     {
       "ticker": "ZS=F",
@@ -160,7 +178,10 @@
       "source": "yahoo",
       "seriesType": "price",
       "startDate": "2000-09-15",
-      "path": "data/prices/ZS=F.csv"
+      "path": "data/prices/ZS=F.csv",
+      "product": "soybeans",
+      "form": "grain",
+      "kgPerUnit": 27.2155422
     },
     {
       "ticker": "PSOYBUSDM",
@@ -170,7 +191,10 @@
       "source": "fred",
       "seriesType": "index",
       "startDate": "1992-01-01",
-      "path": "data/indices/SOYBEANS_GLOBAL.csv"
+      "path": "data/indices/SOYBEANS_GLOBAL.csv",
+      "product": "soybeans",
+      "form": "grain",
+      "kgPerUnit": 1000
     },
     {
       "ticker": "WPU012205",
@@ -190,7 +214,10 @@
       "source": "fred",
       "seriesType": "index",
       "startDate": "1986-03-01",
-      "path": "data/indices/POTATO_US_RETAIL.csv"
+      "path": "data/indices/POTATO_US_RETAIL.csv",
+      "product": "potatoes",
+      "form": "fresh",
+      "kgPerUnit": 0.45359237
     },
     {
       "ticker": "WPU01130603",
@@ -221,6 +248,9 @@
       "seriesType": "index",
       "startDate": "2008-05-15",
       "path": "data/indices/CASSAVA_COD_LUBUMBASHI.csv",
+      "product": "cassava",
+      "form": "flour",
+      "kgPerUnit": 1,
       "wfp": {
         "country": "democratic-republic-of-the-congo",
         "market": "Lubumbashi",
@@ -238,6 +268,9 @@
       "seriesType": "index",
       "startDate": "2015-01-15",
       "path": "data/indices/YAM_NGA_POTISKUM.csv",
+      "product": "yam",
+      "form": "tuber",
+      "kgPerUnit": 2.5,
       "wfp": {
         "country": "nigeria",
         "market": "Potiskum",
@@ -255,6 +288,9 @@
       "seriesType": "index",
       "startDate": "2013-03-15",
       "path": "data/indices/PLANTAIN_COL_MEDELLIN.csv",
+      "product": "plantain",
+      "form": "fruit",
+      "kgPerUnit": 1,
       "wfp": {
         "country": "colombia",
         "market": "Medellin",

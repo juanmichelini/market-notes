@@ -1,0 +1,78 @@
+{
+  "version": "1",
+  "description": "Energy density and edible fraction of each staple in the form it is priced in. kcalPer100g is for the edible food; edibleFraction is edible mass divided by purchased mass (see core/src/nutrition.ts). status 'issue' = value taken from the table in issue #106; 'estimate' = approximate, to be checked against the cited source before relying on it.",
+  "entries": [
+    {
+      "product": "maize",
+      "form": "grain",
+      "kcalPer100g": 365,
+      "edibleFraction": 1,
+      "status": "issue",
+      "source": "USDA FoodData Central, corn grain (approximate)"
+    },
+    {
+      "product": "rice",
+      "form": "milled",
+      "kcalPer100g": 360,
+      "edibleFraction": 1,
+      "status": "issue",
+      "source": "USDA FoodData Central, white rice, raw (approximate)"
+    },
+    {
+      "product": "rice",
+      "form": "rough",
+      "kcalPer100g": 360,
+      "edibleFraction": 0.67,
+      "status": "issue",
+      "source": "As milled rice; edible fraction is the milling yield, 0.65-0.70 per issue #106 (midpoint taken)"
+    },
+    {
+      "product": "wheat",
+      "form": "grain",
+      "kcalPer100g": 340,
+      "edibleFraction": 1,
+      "status": "issue",
+      "source": "USDA FoodData Central, wheat grain (approximate); whole grain, not flour"
+    },
+    {
+      "product": "sorghum",
+      "form": "grain",
+      "kcalPer100g": 330,
+      "edibleFraction": 1,
+      "status": "issue",
+      "source": "USDA FoodData Central, sorghum grain (approximate)"
+    },
+    {
+      "product": "soybeans",
+      "form": "grain",
+      "kcalPer100g": 446,
+      "edibleFraction": 1,
+      "status": "issue",
+      "source": "USDA FoodData Central, soybeans, raw (approximate)"
+    },
+    {
+      "product": "potatoes",
+      "form": "fresh",
+      "kcalPer100g": 77,
+      "edibleFraction": 1,
+      "status": "issue",
+      "source": "USDA FoodData Central, potato flesh and skin, raw (approximate); peeling and trimming losses not applied"
+    },
+    {
+      "product": "yam",
+      "form": "tuber",
+      "kcalPer100g": 118,
+      "edibleFraction": 0.85,
+      "status": "estimate",
+      "source": "USDA FoodData Central, yam raw; edible fraction is an approximate peel loss"
+    },
+    {
+      "product": "plantain",
+      "form": "fruit",
+      "kcalPer100g": 122,
+      "edibleFraction": 0.65,
+      "status": "estimate",
+      "source": "USDA FoodData Central, plantain raw; edible fraction is an approximate peel loss"
+    }
+  ]
+}

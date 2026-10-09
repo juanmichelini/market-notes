@@ -145,6 +145,16 @@ export interface WfpQuery {
  * schema, and location on disk.
  *
  * `wfp` is present if and only if `source` is "wfp".
+ *
+ * Food datasets additionally say what they price, so that different series
+ * can be put on a common footing (see ADR-006):
+ * - `product`   : the staple, e.g. "rice", "maize", "cassava"
+ * - `form`      : the form it is priced in, e.g. "rough", "milled", "flour"
+ * - `kgPerUnit` : mass in kilograms of the unit the quote is per (a
+ *                 56 lb corn bushel is 25.40117272; "per 2.5 KG" is 2.5)
+ *
+ * All three are absent for non-food series (equities, oil, CPI) and for
+ * food series that are indices rather than prices per unit.
  */
 export interface DatasetMeta {
   readonly ticker: Ticker
@@ -155,6 +165,9 @@ export interface DatasetMeta {
   readonly seriesType: "price" | "index"
   readonly startDate: ISODate
   readonly path: string           // relative path from repository root
+  readonly product?: string
+  readonly form?: string
+  readonly kgPerUnit?: number
   readonly wfp?: WfpQuery
 }
 
