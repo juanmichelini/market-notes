@@ -281,3 +281,19 @@ export function normalizeIndexSeries(
   const factor = 100 / baseValue
   return mapIndex(series, (v) => v * factor)
 }
+
+/**
+ * Extracts the closing price of each row as a scalar series:
+ *
+ *   v(t) = close(t)
+ *
+ * Futures and equities are stored as OHLCV, while many analyses (unit
+ * conversion, price per calorie, comparison with index series) work on
+ * one number per date. Dates are preserved; NaN stays NaN.
+ *
+ * @param prices - The input price series.
+ * @returns An IndexSeries with the same dates and the `close` values.
+ */
+export function closeIndex(prices: PriceSeries): IndexSeries {
+  return prices.map((row) => ({ date: row.date, value: row.ohlcv.close }))
+}

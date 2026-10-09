@@ -158,3 +158,45 @@ export function convertCurrency(series: IndexSeries, fx: IndexSeries): IndexSeri
     return Number.isFinite(rate) && rate > 0 ? v / rate : NaN
   })
 }
+
+/**
+ * Currency codes that denote a *subunit* of a major currency, with the
+ * major currency and the number of major units in one subunit. Yahoo
+ * Finance quotes CBOT grains in `USX` (US cents), so a quote of 500 USX is
+ * 5.00 USD.
+ */
+export const CURRENCY_SUBUNITS: Readonly<Record<string, { readonly major: string; readonly factor: number }>> = {
+  USX: { major: "USD", factor: 0.01 },
+}
+
+/**
+ * Resolves a currency code to its major unit and the factor that converts
+ * an amount in the given code into that major unit:
+ *
+ *   amount_major = factor × amount_code
+ *
+ * Ordinary currencies map to themselves with factor 1; subunits such as
+ * `USX` map to their major currency (`USD`, factor 0.01).
+ */
+export function majorCurrency(code: string): { readonly major: string; readonly factor: number } {
+  return CURRENCY_SUBUNITS[code] ?? { major: code, factor: 1 }
+}
+
+/**
+ * Restates a price quoted per `kgPerUnit` kilograms as a price per
+ * kilogram, in the major unit of its currency:
+ *
+ *   p_kg(t) = factor × p(t) / kgPerUnit
+ *
+ * where `factor` converts the quote currency to its major unit (see
+ * `majorCurrency`). For example, CBOT corn at 500 USX per bushel of
+ * 25.4012 kg is 0.01 × 500 / 25.4012 ≈ 0.1968 USD per kg.
+ *
+ * @param series    - Prices per quoted unit, in the quote currency.
+ * @param kgPerUnit - Mass in kilograms of the unit the price is quoted per. Must be finite and positive.
+ * @param currency  - The quote currency code (default: already a major unit).
+ * @throws {Error} if `kgPerUnit` is not a finite positive number.
+ */
+export function toPricePerKg(series: IndexSeries, kgPerUnit: number, currency = ""): IndexSeries {
+  return scaleIndex(series, majorCurrency(currency).factor * perUnitFactor(kgPerUnit, 1))
+}
