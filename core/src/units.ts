@@ -200,3 +200,22 @@ export function majorCurrency(code: string): { readonly major: string; readonly 
 export function toPricePerKg(series: IndexSeries, kgPerUnit: number, currency = ""): IndexSeries {
   return scaleIndex(series, majorCurrency(currency).factor * perUnitFactor(kgPerUnit, 1))
 }
+
+/**
+ * Restates a price quoted per `kgPerUnit` kilograms as a price per metric
+ * tonne (1000 kg), in the major unit of its currency:
+ *
+ *   p_t(t) = 1000 × factor × p(t) / kgPerUnit
+ *
+ * This is `toPricePerKg` scaled by 1000, and is the common footing on which
+ * the markets of one product are compared (for example, US dollars per
+ * tonne of maize).
+ *
+ * @param series    - Prices per quoted unit, in the quote currency.
+ * @param kgPerUnit - Mass in kilograms of the unit the price is quoted per. Must be finite and positive.
+ * @param currency  - The quote currency code (default: already a major unit).
+ * @throws {Error} if `kgPerUnit` is not a finite positive number.
+ */
+export function toPricePerTonne(series: IndexSeries, kgPerUnit: number, currency = ""): IndexSeries {
+  return scaleIndex(toPricePerKg(series, kgPerUnit, currency), KG_PER.tonne)
+}
