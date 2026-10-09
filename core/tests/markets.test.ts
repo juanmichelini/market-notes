@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { daysBetween, observationAt } from "../src/markets.js"
+import { daysBetween, observationAt, spreadPercent } from "../src/markets.js"
 import { isoDate, type IndexRow } from "../src/types.js"
 
 function indexRow(date: string, value: number): IndexRow {
@@ -81,5 +81,39 @@ describe("observationAt", () => {
 
   it("returns the observation when it is exactly at the staleness limit", () => {
     expect(observationAt(monthly, isoDate("2024-04-14"), 30)!.value).toBe(30)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// spreadPercent
+// ---------------------------------------------------------------------------
+
+describe("spreadPercent", () => {
+  it("is zero when the price equals the reference", () => {
+    expect(spreadPercent(250, 250)).toBe(0)
+  })
+
+  it("is positive when the price is above the reference", () => {
+    expect(spreadPercent(275, 250)).toBeCloseTo(10, 10)
+  })
+
+  it("is negative when the price is below the reference", () => {
+    expect(spreadPercent(200, 250)).toBeCloseTo(-20, 10)
+  })
+
+  it("is 100 when the price is double the reference", () => {
+    expect(spreadPercent(500, 250)).toBeCloseTo(100, 10)
+  })
+
+  it("is NaN when the reference is zero", () => {
+    expect(spreadPercent(100, 0)).toBeNaN()
+  })
+
+  it("is NaN when the reference is negative", () => {
+    expect(spreadPercent(100, -5)).toBeNaN()
+  })
+
+  it("is NaN when the price is missing", () => {
+    expect(spreadPercent(NaN, 250)).toBeNaN()
   })
 })
