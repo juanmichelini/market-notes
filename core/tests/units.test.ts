@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { KG_PER, perUnitFactor, scaleIndex, scalePrices, convertCurrency, majorCurrency, toPricePerKg } from "../src/units.js"
+import { KG_PER, perUnitFactor, scaleIndex, scalePrices, convertCurrency, majorCurrency, toPricePerKg, toPricePerTonne } from "../src/units.js"
 import { isoDate, type PriceRow, type IndexRow } from "../src/types.js"
 
 // ---------------------------------------------------------------------------
@@ -201,5 +201,24 @@ describe("toPricePerKg", () => {
 
   it("throws for a non-positive pack size", () => {
     expect(() => toPricePerKg([indexRow("2024-01-15", 1)], 0, "USD")).toThrow()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// toPricePerTonne
+// ---------------------------------------------------------------------------
+
+describe("toPricePerTonne", () => {
+  it("converts CBOT corn from US cents per bushel to dollars per tonne", () => {
+    // 500 USX/bu ≈ $196.84 per tonne (the same worked example as scalePrices above)
+    expect(toPricePerTonne([indexRow("2024-01-02", 500)], KG_PER.bushelCorn, "USX")[0]!.value).toBeCloseTo(196.84, 2)
+  })
+
+  it("leaves a price already per tonne unchanged", () => {
+    expect(toPricePerTonne([indexRow("2024-01-15", 400)], KG_PER.tonne, "USD")[0]!.value).toBeCloseTo(400, 10)
+  })
+
+  it("multiplies a price per kg by 1000", () => {
+    expect(toPricePerTonne([indexRow("2024-01-15", 0.25)], KG_PER.kilogram, "COP")[0]!.value).toBe(250)
   })
 })

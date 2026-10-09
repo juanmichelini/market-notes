@@ -140,6 +140,30 @@ export interface WfpQuery {
 }
 
 /**
+ * Where a dataset's price applies, for placing it on a map (see ADR-007).
+ *
+ * - `country` : ISO 3166-1 alpha-3 code of the country, e.g. "USA"
+ * - `place`   : the named place, e.g. "Chicago", "US Gulf", "Lubumbashi"
+ * - `lat`, `lon` : decimal degrees (WGS 84) of the marker
+ * - `scope`   : what kind of price this is.
+ *     "exchange"  — a futures contract, located at the exchange it trades on
+ *     "port"      — an export (FOB) benchmark, located at the port region
+ *     "market"    — a price observed in one local market
+ *     "national"  — a national average, located at a representative point
+ *
+ * A futures price is a reference price for a delivery region, not an
+ * observation made at the exchange's address; `scope` tells readers which
+ * kind of point they are looking at.
+ */
+export interface MarketLocation {
+  readonly country: string
+  readonly place: string
+  readonly lat: number
+  readonly lon: number
+  readonly scope: "exchange" | "port" | "market" | "national"
+}
+
+/**
  * Metadata for a single dataset, as recorded in `data/manifest.json`.
  * This record is the authoritative description of a dataset's provenance,
  * schema, and location on disk.
@@ -152,6 +176,7 @@ export interface WfpQuery {
  * - `form`      : the form it is priced in, e.g. "rough", "milled", "flour"
  * - `kgPerUnit` : mass in kilograms of the unit the quote is per (a
  *                 56 lb corn bushel is 25.40117272; "per 2.5 KG" is 2.5)
+ * - `location`  : where the price applies (see `MarketLocation`)
  *
  * All three are absent for non-food series (equities, oil, CPI) and for
  * food series that are indices rather than prices per unit.
@@ -168,6 +193,7 @@ export interface DatasetMeta {
   readonly product?: string
   readonly form?: string
   readonly kgPerUnit?: number
+  readonly location?: MarketLocation
   readonly wfp?: WfpQuery
 }
 

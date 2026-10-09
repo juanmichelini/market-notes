@@ -103,7 +103,14 @@
       "path": "data/prices/ZC=F.csv",
       "product": "maize",
       "form": "grain",
-      "kgPerUnit": 25.40117272
+      "kgPerUnit": 25.40117272,
+      "location": {
+        "country": "USA",
+        "place": "Chicago",
+        "lat": 41.88,
+        "lon": -87.63,
+        "scope": "exchange"
+      }
     },
     {
       "ticker": "PMAIZMTUSDM",
@@ -116,7 +123,14 @@
       "path": "data/indices/MAIZE_USGULF.csv",
       "product": "maize",
       "form": "grain",
-      "kgPerUnit": 1000
+      "kgPerUnit": 1000,
+      "location": {
+        "country": "USA",
+        "place": "US Gulf",
+        "lat": 29.95,
+        "lon": -90.07,
+        "scope": "port"
+      }
     },
     {
       "ticker": "ZR=F",
@@ -129,7 +143,14 @@
       "path": "data/prices/ZR=F.csv",
       "product": "rice",
       "form": "rough",
-      "kgPerUnit": 45.359237
+      "kgPerUnit": 45.359237,
+      "location": {
+        "country": "USA",
+        "place": "Chicago",
+        "lat": 41.88,
+        "lon": -87.63,
+        "scope": "exchange"
+      }
     },
     {
       "ticker": "ZW=F",
@@ -142,7 +163,14 @@
       "path": "data/prices/ZW=F.csv",
       "product": "wheat",
       "form": "grain",
-      "kgPerUnit": 27.2155422
+      "kgPerUnit": 27.2155422,
+      "location": {
+        "country": "USA",
+        "place": "Chicago",
+        "lat": 41.88,
+        "lon": -87.63,
+        "scope": "exchange"
+      }
     },
     {
       "ticker": "KE=F",
@@ -155,7 +183,14 @@
       "path": "data/prices/KE=F.csv",
       "product": "wheat",
       "form": "grain",
-      "kgPerUnit": 27.2155422
+      "kgPerUnit": 27.2155422,
+      "location": {
+        "country": "USA",
+        "place": "Kansas City",
+        "lat": 39.1,
+        "lon": -94.58,
+        "scope": "exchange"
+      }
     },
     {
       "ticker": "PWHEAMTUSDM",
@@ -168,7 +203,14 @@
       "path": "data/indices/WHEAT_GLOBAL.csv",
       "product": "wheat",
       "form": "grain",
-      "kgPerUnit": 1000
+      "kgPerUnit": 1000,
+      "location": {
+        "country": "USA",
+        "place": "US Gulf",
+        "lat": 29.95,
+        "lon": -90.07,
+        "scope": "port"
+      }
     },
     {
       "ticker": "ZS=F",
@@ -181,7 +223,14 @@
       "path": "data/prices/ZS=F.csv",
       "product": "soybeans",
       "form": "grain",
-      "kgPerUnit": 27.2155422
+      "kgPerUnit": 27.2155422,
+      "location": {
+        "country": "USA",
+        "place": "Chicago",
+        "lat": 41.88,
+        "lon": -87.63,
+        "scope": "exchange"
+      }
     },
     {
       "ticker": "PSOYBUSDM",
@@ -194,7 +243,14 @@
       "path": "data/indices/SOYBEANS_GLOBAL.csv",
       "product": "soybeans",
       "form": "grain",
-      "kgPerUnit": 1000
+      "kgPerUnit": 1000,
+      "location": {
+        "country": "USA",
+        "place": "US Gulf",
+        "lat": 29.95,
+        "lon": -90.07,
+        "scope": "port"
+      }
     },
     {
       "ticker": "WPU012205",
@@ -217,7 +273,14 @@
       "path": "data/indices/POTATO_US_RETAIL.csv",
       "product": "potatoes",
       "form": "fresh",
-      "kgPerUnit": 0.45359237
+      "kgPerUnit": 0.45359237,
+      "location": {
+        "country": "USA",
+        "place": "United States",
+        "lat": 39.83,
+        "lon": -98.58,
+        "scope": "national"
+      }
     },
     {
       "ticker": "WPU01130603",
@@ -251,6 +314,13 @@
       "product": "cassava",
       "form": "flour",
       "kgPerUnit": 1,
+      "location": {
+        "country": "COD",
+        "place": "Lubumbashi",
+        "lat": -11.66,
+        "lon": 27.48,
+        "scope": "market"
+      },
       "wfp": {
         "country": "democratic-republic-of-the-congo",
         "market": "Lubumbashi",
@@ -271,6 +341,13 @@
       "product": "yam",
       "form": "tuber",
       "kgPerUnit": 2.5,
+      "location": {
+        "country": "NGA",
+        "place": "Potiskum",
+        "lat": 11.71,
+        "lon": 11.08,
+        "scope": "market"
+      },
       "wfp": {
         "country": "nigeria",
         "market": "Potiskum",
@@ -291,6 +368,13 @@
       "product": "plantain",
       "form": "fruit",
       "kgPerUnit": 1,
+      "location": {
+        "country": "COL",
+        "place": "Medellín",
+        "lat": 6.25,
+        "lon": -75.56,
+        "scope": "market"
+      },
       "wfp": {
         "country": "colombia",
         "market": "Medellin",
