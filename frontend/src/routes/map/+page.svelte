@@ -5,6 +5,7 @@
     majorCurrency,
     observationAt,
     pricePerCalorie,
+    spreadPercent,
     toPricePerKg,
     toPricePerTonne,
     isoDate,
@@ -29,6 +30,8 @@
   let products: string[] = []
   let product = ""
   let metric: Metric = "usd_t"
+  /** Ticker of the reference market for the spread overlay; "" for none. */
+  let reference = ""
   let dates: ISODate[] = []
   let dateIdx = 0
   let playing = false
@@ -43,8 +46,16 @@
 
   $: productDatasets = located.filter((d) => d.product === product)
   $: date = dates[dateIdx]
-  $: markers = ready && date ? computeMarkers(productDatasets, date, metric, raw) : []
-  $: unitLabel = metric === "usd_t" ? "USD per tonne" : "USD per 1,000 kcal"
+  $: priced = ready && date ? computeMarkers(productDatasets, date, metric, raw) : []
+  $: shown = applySpread(priced, reference)
+  $: markers = shown.markers
+  $: diverging = shown.active
+  $: referenceNote = reference && !shown.active ? "The reference market has no price on this date." : ""
+  $: unitLabel = diverging
+    ? "% above (+) or below (−) reference"
+    : metric === "usd_t"
+      ? "USD per tonne"
+      : "USD per 1,000 kcal"
 
   /** Last calendar day of the month containing `d`, so a slider step shows that month's latest price. */
   function endOfMonth(key: string): ISODate {
@@ -107,9 +118,32 @@
     })
   }
 
+  /**
+   * With a reference market chosen, recolour every priced marker by its spread over the reference
+   * (percentage of the reference price), keeping the underlying price in the hover text.
+   */
+  function applySpread(list: MapMarker[], ref: string): { markers: MapMarker[]; active: boolean } {
+    const refMarker = ref ? list.find((m) => m.id === ref) : undefined
+    if (!refMarker || refMarker.value === null) return { markers: list, active: false }
+    const base = refMarker.value
+    const refPlace = refMarker.label
+    return {
+      active: true,
+      markers: list.map((m) => {
+        if (m.value === null) return m
+        if (m.id === ref) return { ...m, value: 0, valueText: `Reference — ${m.valueText}` }
+        const spread = spreadPercent(m.value, base)
+        if (!isFinite(spread)) return { ...m, value: null }
+        const sign = spread > 0 ? "+" : ""
+        return { ...m, value: spread, valueText: `${sign}${spread.toFixed(1)}% vs ${refPlace} (${m.valueText})` }
+      }),
+    }
+  }
+
   async function selectProduct(next: string) {
     stop()
     product = next
+    reference = ""
     ready = false
     error = null
     try {
@@ -200,13 +234,24 @@
         </select>
       </label>
 
+      <label>
+        Spread vs
+        <select bind:value={reference}>
+          <option value="">none</option>
+          {#each productDatasets as d (d.ticker)}
+            <option value={d.ticker}>{d.location?.place} — {d.name}</option>
+          {/each}
+        </select>
+      </label>
+
       <div class="toggle" role="group" aria-label="Price unit">
         <button class:active={metric === "usd_t"} on:click={() => setMetric("usd_t")}>USD / tonne</button>
         <button class:active={metric === "kcal"} on:click={() => setMetric("kcal")}>USD / 1,000 kcal</button>
       </div>
     </div>
 
-    <PriceMap {markers} {unitLabel} {countries} />
+    <PriceMap {markers} {unitLabel} {countries} {diverging} />
+    {#if referenceNote}<p class="meta">{referenceNote}</p>{/if}
 
     {#if dates.length > 0}
       <div class="slider">

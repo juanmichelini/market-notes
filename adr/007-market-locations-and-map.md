@@ -16,7 +16,7 @@ Issue #105 asks for a map of one product's price at every market we track, on a 
    - `national`: a national average, placed at a representative point.
 2. `core/src/markets.ts` gives the price at a date with its provenance: `observationAt(series, date, maxStaleDays?)` returns the latest observation on or before the date together with the date it was observed and its age in days. `daysBetween` is the calendar-day difference it uses.
 3. `core/src/units.ts` gains `toPricePerTonne`, the common footing for comparing markets of one product.
-4. The frontend adds a `/map` route that draws one marker per located dataset with d3-geo (no new dependency, per ADR-004), coloured by price on a sequential scale, with a product picker, a date slider with play, and a toggle between USD per tonne and USD per 1,000 kcal (ADR-006).
+4. The frontend adds a `/map` route that draws one marker per located dataset with d3-geo (no new dependency, per ADR-004), coloured by price on a sequential scale, with a product picker, a date slider with play, and a toggle between USD per tonne and USD per 1,000 kcal (ADR-006). Choosing a reference market recolours the markers by `spreadPercent`, the percentage gap to the reference, on a diverging scale.
 5. Country outlines are loaded from the optional file `frontend/static/geo/countries.geojson`. The map draws a graticule and the markers without it.
 
 ## Rationale

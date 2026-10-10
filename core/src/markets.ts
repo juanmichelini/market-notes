@@ -93,3 +93,26 @@ export function observationAt(
   if (maxStaleDays !== undefined && staleDays > maxStaleDays) return undefined
   return { value: row.value, observedOn: row.date, staleDays }
 }
+
+/**
+ * The spread of a price over a reference price, as a percentage of the
+ * reference:
+ *
+ *   spread = 100 × (p − r) / r  =  100 × (p / r − 1)
+ *
+ * Positive means the market is dearer than the reference, negative cheaper.
+ * Expressing the gap as a share of the reference makes spreads comparable
+ * across products with very different price levels (rice against maize).
+ * Both prices must be in the same currency and per the same unit; see
+ * `toPricePerTonne`.
+ *
+ * Returns NaN, not ±Infinity, when the reference is not a positive finite
+ * number or the price is missing, so the series invariants are kept.
+ *
+ * @param price     - The price at the market of interest.
+ * @param reference - The reference price, e.g. an export benchmark.
+ */
+export function spreadPercent(price: number, reference: number): number {
+  if (!Number.isFinite(reference) || reference <= 0 || !Number.isFinite(price)) return NaN
+  return 100 * (price / reference - 1)
+}

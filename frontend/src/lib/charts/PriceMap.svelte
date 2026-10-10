@@ -9,6 +9,8 @@
   export let countries: d3.GeoPermissibleObjects | null = null
   /** Colour scale domain; defaults to the range of the shown values. */
   export let domain: [number, number] | null = null
+  /** Draw a diverging scale centred on zero (for spreads) instead of a sequential one. */
+  export let diverging: boolean = false
 
   let container: HTMLDivElement
   let svg: SVGSVGElement
@@ -50,11 +52,22 @@
     }
 
     const values = markers.map((m) => m.value).filter((v): v is number => v !== null && isFinite(v))
-    const [lo, hi] = domain ?? [d3.min(values) ?? 0, d3.max(values) ?? 1]
-    // When every market has the same price the scale would collapse; widen it.
-    const color = d3
-      .scaleSequential(d3.interpolateYlOrRd)
-      .domain(lo === hi ? [lo * 0.9, hi * 1.1 || 1] : [lo, hi])
+    // Sequential: low → high. Diverging: red above the reference, blue below, symmetric about zero.
+    const interpolate = diverging ? (t: number) => d3.interpolateRdBu(1 - t) : d3.interpolateYlOrRd
+    let lo: number
+    let hi: number
+    let color: (v: number) => string
+    if (diverging) {
+      const reach = domain ? Math.max(Math.abs(domain[0]), Math.abs(domain[1])) : (d3.max(values, (v: number) => Math.abs(v)) ?? 1)
+      lo = -(reach || 1)
+      hi = reach || 1
+      color = d3.scaleDiverging(interpolate).domain([lo, 0, hi])
+    } else {
+      ;[lo, hi] = domain ?? [d3.min(values) ?? 0, d3.max(values) ?? 1]
+      // When every market has the same price the scale would collapse; widen it.
+      color = d3.scaleSequential(interpolate).domain(lo === hi ? [lo * 0.9, hi * 1.1 || 1] : [lo, hi])
+    }
+    const fmt = diverging ? d3.format("+,.1f") : d3.format(",.3~f")
 
     const placed = markers
       .map((m) => ({ m, xy: projection([m.lon, m.lat]) }))
@@ -90,13 +103,13 @@
         grad
           .append("stop")
           .attr("offset", `${i * 10}%`)
-          .attr("stop-color", d3.interpolateYlOrRd(i / 10))
+          .attr("stop-color", interpolate(i / 10))
       }
       const lx = 16
       const ly = height - 28
       root.append("rect").attr("x", lx).attr("y", ly).attr("width", 160).attr("height", 8).attr("fill", "url(#map-legend-grad)")
       root.append("text").attr("x", lx).attr("y", ly - 4).attr("font-size", "10px").attr("fill", "#374151").text(unitLabel)
-      root.append("text").attr("x", lx).attr("y", ly + 20).attr("font-size", "10px").attr("fill", "#374151").text(d3.format(",.3~f")(lo))
+      root.append("text").attr("x", lx).attr("y", ly + 20).attr("font-size", "10px").attr("fill", "#374151").text(fmt(lo))
       root
         .append("text")
         .attr("x", lx + 160)
@@ -104,7 +117,7 @@
         .attr("text-anchor", "end")
         .attr("font-size", "10px")
         .attr("fill", "#374151")
-        .text(d3.format(",.3~f")(hi))
+        .text(fmt(hi))
     }
   }
 
@@ -114,7 +127,7 @@
     tipY = event.clientY - box.top + 12
   }
 
-  $: if (svg && markers && countries !== undefined && unitLabel !== undefined && width) draw()
+  $: if (svg && markers && countries !== undefined && unitLabel !== undefined && diverging !== undefined && width) draw()
 
   onMount(() => {
     if (!container) return
