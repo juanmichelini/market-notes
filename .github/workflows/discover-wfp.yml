@@ -1,0 +1,46 @@
+name: Discover WFP series
+
+# Manual only. Lists the WFP market series for a commodity in some countries
+# so manifest entries can use the exact market/commodity/unit/pricetype
+# strings. Read-only: it changes no files. The report is in the run summary.
+
+on:
+  workflow_dispatch:
+    inputs:
+      countries:
+        description: 'HDX country slugs, comma separated (wfp-food-prices-for-<slug>)'
+        required: true
+        default: 'thailand,vietnam,india,indonesia,philippines,bangladesh,pakistan,myanmar,cambodia,nepal'
+      commodity:
+        description: 'Commodity name regex (case-insensitive)'
+        required: true
+        default: '^Rice'
+      min_rows:
+        description: 'Minimum months of data'
+        required: true
+        default: '60'
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: List matching series
+        env:
+          COUNTRIES: ${{ inputs.countries }}
+          COMMODITY: ${{ inputs.commodity }}
+          MIN_ROWS: ${{ inputs.min_rows }}
+        run: |
+          node fetcher/scripts/discover-wfp.mjs "$COUNTRIES" "$COMMODITY" "$MIN_ROWS" | tee report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wfp-series-report
+          path: report.md
