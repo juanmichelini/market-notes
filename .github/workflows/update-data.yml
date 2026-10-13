@@ -38,6 +38,9 @@ jobs:
       # squash-merges it. This needs the repository setting "Allow GitHub Actions
       # to create and approve pull requests" (Settings > Actions > General).
       - name: Commit updated data files
+        # Also when a fetch failed, so one bad series does not block the rest;
+        # the job still ends red because the fetch step failed.
+        if: ${{ !cancelled() }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

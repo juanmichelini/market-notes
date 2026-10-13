@@ -384,6 +384,174 @@
       }
     },
     {
+      "ticker": "WFP:THA:RICE:BANGKOK",
+      "name": "Rice (Thailand, Bangkok)",
+      "description": "WFP wholesale price of rice in Bangkok, Thailand, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2000-01-15",
+      "path": "data/indices/RICE_THA_BANGKOK.csv",
+      "product": "rice",
+      "form": "milled",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "THA",
+        "place": "Bangkok",
+        "lat": 13.72,
+        "lon": 100.48,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "thailand",
+        "market": "Bangkok",
+        "commodity": "Rice",
+        "unit": "KG",
+        "pricetype": "Wholesale",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:IND:RICE:MUMBAI",
+      "name": "Rice (India, Mumbai)",
+      "description": "WFP retail price of rice in Mumbai, India, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "1994-01-15",
+      "path": "data/indices/RICE_IND_MUMBAI.csv",
+      "product": "rice",
+      "form": "milled",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "IND",
+        "place": "Mumbai",
+        "lat": 18.98,
+        "lon": 72.83,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "india",
+        "market": "Mumbai",
+        "commodity": "Rice",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:BGD:RICE:DHAKA",
+      "name": "Rice (Bangladesh, Dhaka)",
+      "description": "WFP retail price of coarse rice (BR-8/11, Guti Sharna) in Dhaka, Bangladesh, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2008-01-15",
+      "path": "data/indices/RICE_BGD_DHAKA.csv",
+      "product": "rice",
+      "form": "milled",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "BGD",
+        "place": "Dhaka",
+        "lat": 23.81,
+        "lon": 90.41,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "bangladesh",
+        "market": "Dhaka",
+        "commodity": "Rice (coarse, BR-8/ 11/, Guti Sharna)",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:PHL:RICE:METRO_MANILA",
+      "name": "Rice (Philippines, Metro Manila)",
+      "description": "WFP retail price of regular milled rice in Metro Manila, Philippines, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2000-01-15",
+      "path": "data/indices/RICE_PHL_METRO_MANILA.csv",
+      "product": "rice",
+      "form": "milled",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "PHL",
+        "place": "Metro Manila",
+        "lat": 14.6,
+        "lon": 120.98,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "philippines",
+        "market": "Metro Manila",
+        "commodity": "Rice (regular, milled)",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:IDN:RICE:BADUNG",
+      "name": "Rice (Indonesia, Pasar Badung, Denpasar)",
+      "description": "WFP retail price of medium-quality rice in Pasar Badung market in Pasar Badung, Denpasar, Indonesia, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2016-07-15",
+      "path": "data/indices/RICE_IDN_BADUNG.csv",
+      "product": "rice",
+      "form": "milled",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "IDN",
+        "place": "Denpasar",
+        "lat": -8.66,
+        "lon": 115.21,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "indonesia",
+        "market": "Pasar Badung",
+        "commodity": "Rice (medium quality)",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:PAK:RICE:KARACHI",
+      "name": "Rice (Pakistan, Karachi)",
+      "description": "WFP retail price of coarse rice in Karachi, Pakistan, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2006-01-15",
+      "path": "data/indices/RICE_PAK_KARACHI.csv",
+      "product": "rice",
+      "form": "milled",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "PAK",
+        "place": "Karachi",
+        "lat": 24.91,
+        "lon": 67.08,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "pakistan",
+        "market": "Karachi",
+        "commodity": "Rice (coarse)",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
       "ticker": "CPIAUCSL",
       "name": "US CPI (All Urban Consumers, Seasonally Adjusted)",
       "description": "Consumer Price Index for All Urban Consumers, seasonally adjusted. Published by the U.S. Bureau of Labor Statistics, retrieved via FRED (Federal Reserve Bank of St. Louis).",

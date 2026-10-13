@@ -88,7 +88,7 @@ export async function fetchWfpSeries(
   const iCommodity = col("commodity")
   const iUnit = col("unit")
   const iType = col("pricetype")
-  const iPrice = col("price")
+  const iPrice = col(query.priceColumn ?? "price")
 
   const byDate = new Map<string, IndexRow>()
   for (const line of lines.slice(1)) {

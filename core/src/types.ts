@@ -137,6 +137,12 @@ export interface WfpQuery {
   readonly commodity: string
   readonly unit: string
   readonly pricetype: "Retail" | "Wholesale"
+  /**
+   * Which price column to read: "price" (local currency, the default) or
+   * "usdprice" (WFP's own conversion to US dollars at the official exchange
+   * rate of the month). With "usdprice" the dataset's `currency` is "USD".
+   */
+  readonly priceColumn?: "price" | "usdprice"
 }
 
 /**

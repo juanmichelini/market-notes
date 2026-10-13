@@ -41,6 +41,12 @@ Data is fetched nightly via GitHub Actions, stored as plain CSV files under vers
 | WFP:COD:CASSAVA_FLOUR:LUBUMBASHI | Cassava flour, DR Congo, Lubumbashi retail (CDF/kg, monthly) | WFP via HDX | 2008 |
 | WFP:NGA:YAM:POTISKUM | Yam, Nigeria, Potiskum retail (NGN/2.5 kg, monthly) | WFP via HDX | 2015 |
 | WFP:COL:PLANTAIN:MEDELLIN | Plantain, Colombia, Medellín wholesale (COP/kg, monthly) | WFP via HDX | 2013 |
+| WFP:THA:RICE:BANGKOK | Rice, Thailand, Bangkok wholesale (USD/kg, monthly) | WFP via HDX | 2000 |
+| WFP:IND:RICE:MUMBAI | Rice, India, Mumbai retail (USD/kg, monthly) | WFP via HDX | 1994 |
+| WFP:BGD:RICE:DHAKA | Rice (coarse), Bangladesh, Dhaka retail (USD/kg, monthly) | WFP via HDX | 2008 |
+| WFP:PHL:RICE:METRO_MANILA | Rice (regular, milled), Philippines, Metro Manila retail (USD/kg, monthly) | WFP via HDX | 2000 |
+| WFP:IDN:RICE:BADUNG | Rice (medium quality), Indonesia, Pasar Badung retail (USD/kg, monthly) | WFP via HDX | 2016 |
+| WFP:PAK:RICE:KARACHI | Rice (coarse), Pakistan, Karachi retail (USD/kg, monthly) | WFP via HDX | 2006 |
 | CPIAUCSL | US CPI (All Urban Consumers, Seas. Adj.)    | FRED          | 2006 |
 
 ---
