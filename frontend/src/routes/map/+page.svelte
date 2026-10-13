@@ -148,12 +148,19 @@
     error = null
     try {
       const wanted = located.filter((d) => d.product === next)
-      const loaded = await Promise.all(
+      // A dataset whose file is missing or unreadable is left out rather than failing the whole map.
+      const results = await Promise.allSettled(
         wanted.map(async (d) =>
           d.seriesType === "price" ? closeIndex(await loadPriceSeries(d.path)) : await loadIndexSeries(d.path)
         )
       )
-      raw = Object.fromEntries(wanted.map((d, i) => [d.ticker, loaded[i]!]))
+      const ok = wanted.flatMap((d, i) => {
+        const r = results[i]!
+        return r.status === "fulfilled" ? [{ d, series: r.value }] : []
+      })
+      if (ok.length === 0) throw new Error(`No data could be loaded for ${next}.`)
+      const loaded = ok.map((x) => x.series)
+      raw = Object.fromEntries(ok.map((x) => [x.d.ticker, x.series]))
       // Slider steps: every month in which any of the product's markets reported.
       const months = new Set<string>()
       for (const s of loaded) for (const row of s) months.add(row.date.slice(0, 7))

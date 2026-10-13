@@ -27,3 +27,8 @@ Add a third source, `wfp`: the World Food Programme's per-country food price dat
 - Dates follow WFP's convention: the 15th of each month.
 - Coverage is uneven: markets start, stop and have gaps, and WFP focuses on food-insecure regions. Each manifest entry's description names the market so the series is not mistaken for a national price.
 - Country CSVs are large (up to ~40 MB); the adapter downloads each country once per run.
+
+## Addendum (2026-10-13): dollar prices
+
+WFP country files carry a `usdprice` column: WFP's own conversion of `price` to US dollars at the official exchange rate of the month. A `WfpQuery` may set `priceColumn: "usdprice"` to read it instead of `price`; the dataset's `currency` is then `"USD"` and it can be compared with other dollar series without an exchange-rate series. The caveat is that official rates can differ from the rate people actually trade at (WFP flags such cases separately), so for countries with a large parallel-market premium the local-currency `price` remains the better record.
+
