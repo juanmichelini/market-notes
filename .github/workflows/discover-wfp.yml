@@ -2,7 +2,8 @@ name: Discover WFP series
 
 # Manual only. Lists the WFP market series for a commodity in some countries
 # so manifest entries can use the exact market/commodity/unit/pricetype
-# strings. Read-only: it changes no files. The report is in the run summary.
+# strings. It changes no files. The report is in the run summary, as an
+# artifact, and as a comment on issue #105 (readable through the API).
 
 on:
   workflow_dispatch:
@@ -25,6 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      issues: write
     steps:
       - uses: actions/checkout@v4
 
@@ -44,3 +46,11 @@ jobs:
         with:
           name: wfp-series-report
           path: report.md
+
+      - name: Post the report on issue #105
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # GitHub comments are limited to 65,536 characters.
+          head -c 60000 report.md > comment.md
+          gh issue comment 105 --repo "$GITHUB_REPOSITORY" --body-file comment.md
