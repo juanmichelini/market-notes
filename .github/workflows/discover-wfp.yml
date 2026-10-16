@@ -3,7 +3,7 @@ name: Discover WFP series
 # Manual only. Lists the WFP market series for a commodity in some countries
 # so manifest entries can use the exact market/commodity/unit/pricetype
 # strings. It changes no files. The report is in the run summary, as an
-# artifact, and as a comment on issue #105 (readable through the API).
+# artifact, and as a comment on the chosen issue (readable through the API).
 
 on:
   workflow_dispatch:
@@ -11,19 +11,36 @@ on:
       countries:
         description: 'HDX country slugs, comma separated (wfp-food-prices-for-<slug>)'
         required: true
-        default: 'thailand,vietnam,india,indonesia,philippines,bangladesh,pakistan,myanmar,cambodia,nepal'
+        default: 'nigeria,ghana,kenya,uganda,tanzania,malawi,mozambique,zambia,zimbabwe,ethiopia,sudan,south-sudan,somalia,niger,mali,burkina-faso,senegal,cameroon,chad,democratic-republic-of-the-congo,rwanda,burundi,madagascar,haiti,guatemala,honduras,el-salvador,colombia,india,indonesia,philippines,pakistan,bangladesh,afghanistan,myanmar,nepal,sri-lanka,yemen,syrian-arab-republic,lebanon'
       commodity:
         description: 'Commodity name regex (case-insensitive)'
         required: true
-        default: '^Rice'
+        default: '^(Maize|Rice|Wheat|Potato|Cassava|Soy|Sweet potato|Yam|Sorghum|Plantain)'
       min_rows:
         description: 'Minimum months of data'
         required: true
         default: '60'
+      mode:
+        description: 'list = every matching series; summary = market counts per commodity'
+        required: true
+        default: 'summary'
+        type: choice
+        options:
+          - list
+          - summary
+      recent_from:
+        description: 'Summary mode: a market is "current" if it reports on or after this date'
+        required: true
+        default: '2024-01-01'
+      issue:
+        description: 'Issue number to post the report on'
+        required: true
+        default: '105'
 
 jobs:
   discover:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     permissions:
       contents: read
       issues: write
@@ -39,18 +56,21 @@ jobs:
           COUNTRIES: ${{ inputs.countries }}
           COMMODITY: ${{ inputs.commodity }}
           MIN_ROWS: ${{ inputs.min_rows }}
+          MODE: ${{ inputs.mode }}
+          RECENT_FROM: ${{ inputs.recent_from }}
         run: |
-          node fetcher/scripts/discover-wfp.mjs "$COUNTRIES" "$COMMODITY" "$MIN_ROWS" | tee report.md >> "$GITHUB_STEP_SUMMARY"
+          node fetcher/scripts/discover-wfp.mjs "$COUNTRIES" "$COMMODITY" "$MIN_ROWS" "$MODE" "$RECENT_FROM" | tee report.md >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v4
         with:
           name: wfp-series-report
           path: report.md
 
-      - name: Post the report on issue #105
+      - name: Post the report on the chosen issue
         env:
           GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ inputs.issue }}
         run: |
           # GitHub comments are limited to 65,536 characters.
           head -c 60000 report.md > comment.md
-          gh issue comment 105 --repo "$GITHUB_REPOSITORY" --body-file comment.md
+          gh issue comment "$ISSUE" --repo "$GITHUB_REPOSITORY" --body-file comment.md
