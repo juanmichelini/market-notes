@@ -70,6 +70,56 @@ export function summarise(csvText, commodity, minRows) {
     .sort((a, b) => b.rows - a.rows || b.last.localeCompare(a.last))
 }
 
+/**
+ * Counts, for each (commodity, unit, pricetype) in a WFP country CSV whose
+ * commodity matches `commodity`, the markets that have at least `minRows`
+ * distinct monthly dates, and how many of those still report on or after
+ * `recentFrom` (an ISO date). Used to ask "does this staple have enough
+ * comparable markets?" without listing every series.
+ */
+export function summariseMarkets(csvText, commodity, minRows, recentFrom) {
+  const lines = csvText.replace(/\r\n?/g, "\n").split("\n")
+  const header = splitCSVLine(lines[0] ?? "")
+  const idx = Object.fromEntries(
+    ["date", "market", "commodity", "unit", "pricetype", "currency", "usdprice"].map((n) => [n, header.indexOf(n)])
+  )
+  for (const required of ["date", "market", "commodity", "unit", "pricetype"]) {
+    if (idx[required] < 0) throw new Error(`WFP CSV has no "${required}" column`)
+  }
+  const matcher = new RegExp(commodity, "i")
+  const series = new Map() // key: commodity|unit|pricetype|market
+  for (const line of lines.slice(1)) {
+    if (!line || line.startsWith("#")) continue
+    const f = splitCSVLine(line)
+    if (!matcher.test(f[idx.commodity] ?? "")) continue
+    const key = [f[idx.commodity], f[idx.unit], f[idx.pricetype], f[idx.market]].join("\u0000")
+    const date = f[idx.date] ?? ""
+    const g = series.get(key) ?? {
+      commodity: f[idx.commodity], unit: f[idx.unit], pricetype: f[idx.pricetype],
+      currency: idx.currency >= 0 ? f[idx.currency] : "", dates: new Set(), first: date, last: date,
+    }
+    g.dates.add(date)
+    if (date < g.first) g.first = date
+    if (date > g.last) g.last = date
+    series.set(key, g)
+  }
+  const groups = new Map() // key: commodity|unit|pricetype
+  for (const g of series.values()) {
+    if (g.dates.size < minRows) continue
+    const key = [g.commodity, g.unit, g.pricetype].join("\u0000")
+    const t = groups.get(key) ?? {
+      commodity: g.commodity, unit: g.unit, pricetype: g.pricetype, currency: g.currency,
+      markets: 0, current: 0, first: g.first, last: g.last,
+    }
+    t.markets += 1
+    if (g.last >= recentFrom) t.current += 1
+    if (g.first < t.first) t.first = g.first
+    if (g.last > t.last) t.last = g.last
+    groups.set(key, t)
+  }
+  return [...groups.values()].sort((a, b) => b.current - a.current || b.markets - a.markets)
+}
+
 async function downloadCountryCSV(country) {
   const id = `wfp-food-prices-for-${country}`
   const pkgRes = await fetch(`${HDX_API}?id=${encodeURIComponent(id)}`)
@@ -83,13 +133,18 @@ async function downloadCountryCSV(country) {
 }
 
 async function main() {
-  const [countriesArg, commodity, minRowsArg] = process.argv.slice(2)
+  const [countriesArg, commodity, minRowsArg, modeArg, recentFromArg] = process.argv.slice(2)
   if (!countriesArg || !commodity) {
-    console.error("usage: discover-wfp.mjs <countries> <commodity-regex> [min-rows]")
+    console.error("usage: discover-wfp.mjs <countries> <commodity-regex> [min-rows] [list|summary] [recent-from]")
     process.exit(2)
   }
   const minRows = Number(minRowsArg ?? 60)
+  const mode = modeArg ?? "list"
+  const recentFrom = recentFromArg ?? "2024-01-01"
   const countries = countriesArg.split(",").map((c) => c.trim().toLowerCase()).filter(Boolean)
+
+  if (mode === "summary") return summaryReport(countries, commodity, minRows, recentFrom)
+
   console.log(`# WFP series matching \`${commodity}\` with at least ${minRows} monthly rows\n`)
   console.log("Use the exact `market`, `commodity`, `unit` and `pricetype` values in a manifest `wfp` query. `country` is the HDX slug.\n")
   let failed = 0
@@ -110,6 +165,44 @@ async function main() {
     }
   }
   if (failed === countries.length) process.exit(1)
+}
+
+/** Market counts per commodity, per country and overall, to see which staples have enough comparable markets. */
+async function summaryReport(countries, commodity, minRows, recentFrom) {
+  console.log(`# WFP market counts for \`${commodity}\`\n`)
+  console.log(`A market counts if it has at least ${minRows} monthly rows; **current** means it reports on or after ${recentFrom}. Markets are only comparable within one row of the overall table (same commodity name, unit and price type).\n`)
+  const overall = new Map()
+  const failures = []
+  const perCountry = []
+  for (const country of countries) {
+    try {
+      const groups = summariseMarkets(await downloadCountryCSV(country), commodity, minRows, recentFrom)
+      perCountry.push([country, groups])
+      for (const g of groups) {
+        const key = [g.commodity, g.unit, g.pricetype].join("\u0000")
+        const t = overall.get(key) ?? { commodity: g.commodity, unit: g.unit, pricetype: g.pricetype, countries: 0, markets: 0, current: 0 }
+        t.countries += 1
+        t.markets += g.markets
+        t.current += g.current
+        overall.set(key, t)
+      }
+    } catch (err) {
+      failures.push(`${country}: ${err instanceof Error ? err.message : String(err)}`)
+    }
+  }
+  console.log("## Overall (same commodity name, unit and price type, all countries)\n")
+  console.log("| commodity | unit | pricetype | countries | markets | current markets |")
+  console.log("|---|---|---|---|---|---|")
+  const rows = [...overall.values()].sort((a, b) => b.current - a.current || b.markets - a.markets)
+  for (const r of rows.slice(0, 40)) console.log(`| ${r.commodity} | ${r.unit} | ${r.pricetype} | ${r.countries} | ${r.markets} | ${r.current} |`)
+  console.log("\n## By country (top 4 groups each)\n")
+  console.log("| country | commodity | unit | pricetype | currency | markets | current | first | last |")
+  console.log("|---|---|---|---|---|---|---|---|---|")
+  for (const [country, groups] of perCountry) {
+    for (const g of groups.slice(0, 4)) console.log(`| ${country} | ${g.commodity} | ${g.unit} | ${g.pricetype} | ${g.currency} | ${g.markets} | ${g.current} | ${g.first} | ${g.last} |`)
+  }
+  if (failures.length > 0) console.log(`\n## Failed countries\n\n${failures.map((f) => `- ${f}`).join("\n")}`)
+  if (failures.length === countries.length) process.exit(1)
 }
 
 import { fileURLToPath } from "node:url"
