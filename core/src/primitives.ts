@@ -25,6 +25,7 @@
 
 import type { PriceSeries } from "./types.js"
 import type { Bar, Pattern, ShapeInstance } from "./patterns.js"
+import { approxEqual, type Fuzzy } from "./fuzzy.js"
 
 /**
  * Clips the closed interval [from, to] to the bars that exist in `series`
@@ -147,5 +148,63 @@ export const down: Pattern = (series, from, to) => {
     }
   }
   return out
+}
+
+/** Options for `horizontal`. */
+export interface HorizontalOptions {
+  /**
+   * Width of the fuzzy comparison of closes, in price units: closes further
+   * apart than this are not level at all. Defaults to 5% of the price (see
+   * `approxEqual`). A width of 0 accepts only identical closes. Must be ≥ 0.
+   */
+  readonly width?: number
+}
+
+/**
+ * Builds the pattern of a level stretch of prices.
+ *
+ * An instance spans bars a < b such that every close from a up to b − 1 is
+ * approximately equal to the close at b. Its score is the lowest degree of
+ * equality found:
+ *
+ *   score = min over t in [a, b) of approxEqual(close(t), close(b), width)
+ *
+ * and a stretch is an instance only if the score is above 0. The landmarks
+ * are [a, b]. A flat series scores 1 everywhere; a drifting one scores less
+ * the further the earlier closes are from the last.
+ *
+ * Implementation note: for a fixed end b the search walks backwards from b − 1
+ * and stops when the score reaches 0, since a longer stretch can only score
+ * lower. It therefore only does work proportional to the length of the level
+ * runs it finds. A missing (NaN) close stops the walk.
+ *
+ * @param options - See `HorizontalOptions`.
+ * @throws {Error} if `options.width` is negative or NaN.
+ * @returns A `Pattern` whose instances have landmarks [a, b], ascending by (a, b).
+ */
+export function horizontal(options: HorizontalOptions = {}): Pattern {
+  const { width } = options
+  if (width !== undefined && !(width >= 0)) {
+    throw new Error(`horizontal: width must be a non-negative number, got ${width}.`)
+  }
+  return (series, from, to) => {
+    const range = clipInterval(series, from, to)
+    if (range === undefined) return []
+    const [lo, hi] = range
+    const out: ShapeInstance[] = []
+    for (let b = lo + 1; b <= hi; b++) {
+      const closeB = series[b]!.ohlcv.close
+      let score: Fuzzy = 1
+      for (let a = b - 1; a >= lo; a--) {
+        const equality = approxEqual(series[a]!.ohlcv.close, closeB, width)
+        if (Number.isNaN(equality)) break
+        score = Math.min(score, equality)
+        if (score === 0) break
+        out.push({ kind: "horizontal", landmarks: [a, b], score })
+      }
+    }
+    // Instances were found by end bar; the contract orders them by start bar first.
+    return out.sort((x, y) => x.landmarks[0]! - y.landmarks[0]! || x.landmarks[1]! - y.landmarks[1]!)
+  }
 }
 

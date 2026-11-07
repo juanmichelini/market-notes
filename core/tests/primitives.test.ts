@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { bar, up, down } from "../src/primitives.js"
+import { bar, up, down, horizontal } from "../src/primitives.js"
 import { landmarks, type Instance } from "../src/patterns.js"
 import { isoDate, type PriceSeries } from "../src/types.js"
 
@@ -180,6 +180,71 @@ describe("down", () => {
     // Negating prices swaps the roles of highs and lows.
     const mirrored = makeSeries(lows.map((l) => -l), highs.map((h) => -h))
     expect(lms(down(mirrored, 0, 5))).toEqual(lms(up(rising, 0, 5)))
+  })
+})
+
+// ---------------------------------------------------------------------------
+// horizontal
+// ---------------------------------------------------------------------------
+
+describe("horizontal", () => {
+  /** A series whose closes are exactly `closes` (highs and lows are irrelevant here). */
+  function closing(closes: number[]): PriceSeries {
+    return makeSeries(closes.map((c) => c + 1), closes.map((c) => c - 1), closes)
+  }
+
+  it("finds every stretch of a perfectly flat series, scored 1", () => {
+    const found = horizontal()(closing([10, 10, 10]), 0, 2)
+    expect(lms(found)).toEqual([[0, 1], [0, 2], [1, 2]])
+    expect(found.map((i) => i.score)).toEqual([1, 1, 1])
+  })
+
+  it("scores a stretch by how closely its closes match the last close", () => {
+    // width 2: |100 - 101| = 1 is halfway to the width, so the score is 0.5.
+    const found = horizontal({ width: 2 })(closing([100, 101, 103]), 0, 2)
+    expect(lms(found)).toEqual([[0, 1]])
+    expect(found[0]!.score).toBeCloseTo(0.5, 10)
+  })
+
+  it("gives a stretch the lowest score of any close in it", () => {
+    // Every stretch passes through the 10.5 close, which scores 0.5 against 10.
+    const found = horizontal({ width: 1 })(closing([10, 10.5, 10]), 0, 2)
+    expect(lms(found)).toEqual([[0, 1], [0, 2], [1, 2]])
+    expect(found.map((i) => i.score)).toEqual([0.5, 0.5, 0.5])
+  })
+
+  it("finds nothing when every pair of closes is further apart than the width", () => {
+    expect(horizontal({ width: 1 })(closing([10, 12, 14]), 0, 2)).toHaveLength(0)
+  })
+
+  it("never reports a stretch that spans a missing close", () => {
+    expect(horizontal()(closing([10, NaN, 10]), 0, 2)).toHaveLength(0)
+  })
+
+  it("lists instances in ascending order of start, then end", () => {
+    const found = horizontal()(closing([10, 10, 10, 10]), 0, 3)
+    expect(lms(found)).toEqual([[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]])
+  })
+
+  it("only reports stretches that lie entirely inside the interval", () => {
+    expect(lms(horizontal()(closing([10, 10, 10, 10]), 1, 2))).toEqual([[1, 2]])
+  })
+
+  it("gives nothing for an interval of a single bar", () => {
+    expect(horizontal()(closing([10, 10, 10]), 1, 1)).toHaveLength(0)
+  })
+
+  it("by default tolerates differences up to 5% of the price", () => {
+    expect(lms(horizontal()(closing([100, 103]), 0, 1))).toEqual([[0, 1]])
+    expect(horizontal()(closing([100, 106]), 0, 1)).toHaveLength(0)
+  })
+
+  it("with width 0 accepts only identical closes", () => {
+    expect(lms(horizontal({ width: 0 })(closing([10, 10, 10.01]), 0, 2))).toEqual([[0, 1]])
+  })
+
+  it("rejects a negative width when the pattern is built", () => {
+    expect(() => horizontal({ width: -1 })).toThrow("horizontal")
   })
 })
 
