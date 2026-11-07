@@ -73,6 +73,38 @@
       "edibleFraction": 0.65,
       "status": "estimate",
       "source": "USDA FoodData Central, plantain raw; edible fraction is an approximate peel loss"
+    },
+    {
+      "product": "maize",
+      "form": "flour",
+      "kcalPer100g": 361,
+      "edibleFraction": 1,
+      "status": "estimate",
+      "source": "USDA FoodData Central, corn flour, whole-grain (approximate); check against the cited source"
+    },
+    {
+      "product": "wheat",
+      "form": "flour",
+      "kcalPer100g": 364,
+      "edibleFraction": 1,
+      "status": "estimate",
+      "source": "USDA FoodData Central, wheat flour, white, all-purpose (approximate); check against the cited source"
+    },
+    {
+      "product": "cassava",
+      "form": "flour",
+      "kcalPer100g": 345,
+      "edibleFraction": 1,
+      "status": "estimate",
+      "source": "Dried cassava flour, roughly 330-360 kcal/100 g depending on processing (midpoint taken); check against FAO/INFOODS tables"
+    },
+    {
+      "product": "sweet potatoes",
+      "form": "tuber",
+      "kcalPer100g": 86,
+      "edibleFraction": 1,
+      "status": "estimate",
+      "source": "USDA FoodData Central, sweet potato, raw, unprepared (approximate); peeling losses not applied"
     }
   ]
 }

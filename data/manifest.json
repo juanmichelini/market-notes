@@ -560,6 +560,370 @@
       "seriesType": "index",
       "startDate": "1950-01-01",
       "path": "data/indices/CPI.csv"
+    },
+    {
+      "ticker": "WFP:MLI:RICE:NIARELA",
+      "name": "Imported rice (Mali, Niarela)",
+      "description": "WFP retail price of imported rice in Niarela, Mali, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2003-01-15",
+      "path": "data/indices/RICE_MLI_NIARELA.csv",
+      "product": "rice",
+      "form": "milled",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "MLI",
+        "place": "Niarela",
+        "lat": 12.65,
+        "lon": -8.0,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "mali",
+        "market": "Niarela",
+        "commodity": "Rice (imported)",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:MLI:MAIZE:NIARELA",
+      "name": "Maize (Mali, Niarela)",
+      "description": "WFP retail price of maize in Niarela, Mali, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2003-01-15",
+      "path": "data/indices/MAIZE_MLI_NIARELA.csv",
+      "product": "maize",
+      "form": "grain",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "MLI",
+        "place": "Niarela",
+        "lat": 12.65,
+        "lon": -8.0,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "mali",
+        "market": "Niarela",
+        "commodity": "Maize",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:MLI:SORGHUM:NIARELA",
+      "name": "Sorghum (Mali, Niarela)",
+      "description": "WFP retail price of sorghum in Niarela, Mali, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2003-01-15",
+      "path": "data/indices/SORGHUM_MLI_NIARELA.csv",
+      "product": "sorghum",
+      "form": "grain",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "MLI",
+        "place": "Niarela",
+        "lat": 12.65,
+        "lon": -8.0,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "mali",
+        "market": "Niarela",
+        "commodity": "Sorghum",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:NER:RICE:MARADI",
+      "name": "Imported rice (Niger, Maradi)",
+      "description": "WFP retail price of imported rice in Maradi, Niger, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "1990-01-15",
+      "path": "data/indices/RICE_NER_MARADI.csv",
+      "product": "rice",
+      "form": "milled",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "NER",
+        "place": "Maradi",
+        "lat": 13.5,
+        "lon": 7.1,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "niger",
+        "market": "Maradi Commune",
+        "commodity": "Rice (imported)",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:NER:MAIZE:MARADI",
+      "name": "Maize (Niger, Maradi)",
+      "description": "WFP retail price of maize in Maradi, Niger, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "1994-01-15",
+      "path": "data/indices/MAIZE_NER_MARADI.csv",
+      "product": "maize",
+      "form": "grain",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "NER",
+        "place": "Maradi",
+        "lat": 13.5,
+        "lon": 7.1,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "niger",
+        "market": "Maradi Commune",
+        "commodity": "Maize",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:NER:SORGHUM:MARADI",
+      "name": "Sorghum (Niger, Maradi)",
+      "description": "WFP retail price of sorghum in Maradi, Niger, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "1990-01-15",
+      "path": "data/indices/SORGHUM_NER_MARADI.csv",
+      "product": "sorghum",
+      "form": "grain",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "NER",
+        "place": "Maradi",
+        "lat": 13.5,
+        "lon": 7.1,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "niger",
+        "market": "Maradi Commune",
+        "commodity": "Sorghum",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:COD:RICE:NYAWERA",
+      "name": "Imported rice (DR Congo, Nyawera)",
+      "description": "WFP retail price of imported rice in Nyawera, DR Congo, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2008-05-15",
+      "path": "data/indices/RICE_COD_NYAWERA.csv",
+      "product": "rice",
+      "form": "milled",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "COD",
+        "place": "Nyawera",
+        "lat": -2.51,
+        "lon": 28.86,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "democratic-republic-of-the-congo",
+        "market": "Nyawera",
+        "commodity": "Rice (imported)",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:COD:CASSAVA:NYAWERA",
+      "name": "Cassava flour (DR Congo, Nyawera)",
+      "description": "WFP retail price of cassava flour in Nyawera, DR Congo, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2008-05-15",
+      "path": "data/indices/CASSAVA_COD_NYAWERA.csv",
+      "product": "cassava",
+      "form": "flour",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "COD",
+        "place": "Nyawera",
+        "lat": -2.51,
+        "lon": 28.86,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "democratic-republic-of-the-congo",
+        "market": "Nyawera",
+        "commodity": "Cassava flour",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:COD:WHEAT_FLOUR:NYAWERA",
+      "name": "Wheat flour (DR Congo, Nyawera)",
+      "description": "WFP retail price of wheat flour in Nyawera, DR Congo, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2008-05-15",
+      "path": "data/indices/WHEAT_FLOUR_COD_NYAWERA.csv",
+      "product": "wheat",
+      "form": "flour",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "COD",
+        "place": "Nyawera",
+        "lat": -2.51,
+        "lon": 28.86,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "democratic-republic-of-the-congo",
+        "market": "Nyawera",
+        "commodity": "Wheat flour",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:COD:MAIZE_FLOUR:NYAWERA",
+      "name": "Maize flour (DR Congo, Nyawera)",
+      "description": "WFP retail price of maize flour in Nyawera, DR Congo, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2008-05-15",
+      "path": "data/indices/MAIZE_FLOUR_COD_NYAWERA.csv",
+      "product": "maize",
+      "form": "flour",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "COD",
+        "place": "Nyawera",
+        "lat": -2.51,
+        "lon": 28.86,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "democratic-republic-of-the-congo",
+        "market": "Nyawera",
+        "commodity": "Maize flour",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:BDI:SWEET_POTATOES:GITEGA",
+      "name": "Sweet potatoes (Burundi, Gitega)",
+      "description": "WFP retail price of sweet potatoes in Gitega, Burundi, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2003-01-15",
+      "path": "data/indices/SWEET_POTATOES_BDI_GITEGA.csv",
+      "product": "sweet potatoes",
+      "form": "tuber",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "BDI",
+        "place": "Gitega",
+        "lat": -3.64,
+        "lon": 30.04,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "burundi",
+        "market": "Gitega",
+        "commodity": "Sweet potatoes",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:BDI:CASSAVA:GITEGA",
+      "name": "Cassava flour (Burundi, Gitega)",
+      "description": "WFP retail price of cassava flour in Gitega, Burundi, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2003-01-15",
+      "path": "data/indices/CASSAVA_BDI_GITEGA.csv",
+      "product": "cassava",
+      "form": "flour",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "BDI",
+        "place": "Gitega",
+        "lat": -3.64,
+        "lon": 30.04,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "burundi",
+        "market": "Gitega",
+        "commodity": "Cassava flour",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
+    },
+    {
+      "ticker": "WFP:BDI:MAIZE:GITEGA",
+      "name": "White maize (Burundi, Gitega)",
+      "description": "WFP retail price of white maize in Gitega, Burundi, monthly, US dollars per kg (WFP's own conversion at the official exchange rate, column usdprice). Source: WFP food prices via HDX, CC BY-IGO.",
+      "currency": "USD",
+      "source": "wfp",
+      "seriesType": "index",
+      "startDate": "2009-02-15",
+      "path": "data/indices/MAIZE_BDI_GITEGA.csv",
+      "product": "maize",
+      "form": "grain",
+      "kgPerUnit": 1,
+      "location": {
+        "country": "BDI",
+        "place": "Gitega",
+        "lat": -3.64,
+        "lon": 30.04,
+        "scope": "market"
+      },
+      "wfp": {
+        "country": "burundi",
+        "market": "Gitega",
+        "commodity": "Maize (white)",
+        "unit": "KG",
+        "pricetype": "Retail",
+        "priceColumn": "usdprice"
+      }
     }
   ]
 }

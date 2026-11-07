@@ -30,6 +30,15 @@
   let loading = true
   let error: string | null = null
 
+  // Same-market comparison: staples priced in one place, so the only thing
+  // that differs between the lines is the food itself.
+  type Market = { id: string; name: string; members: Candidate[] }
+  let markets: Market[] = []
+  let marketId = ""
+  let marketLines: Array<{ label: string; series: IndexSeries; color: string }> = []
+  let marketCheapest: { date: string; label: string; value: number } | null = null
+  let marketError: string | null = null
+
   const calorieCache = new Map<string, IndexSeries>()
 
   /** Price per 1,000 kcal in USD for one dataset, memoised. */
@@ -76,6 +85,68 @@
     }
   }
 
+  /** Markets that price at least two different foods, from the manifest's `location`. */
+  function groupMarkets(all: Candidate[]): Market[] {
+    const byPlace = new Map<string, Candidate[]>()
+    for (const c of all) {
+      const loc = c.dataset.location
+      if (!loc || loc.scope !== "market") continue
+      const id = `${loc.country}:${loc.place}`
+      byPlace.set(id, [...(byPlace.get(id) ?? []), c])
+    }
+    return [...byPlace.entries()]
+      .map(([id, members]) => ({
+        id,
+        name: `${members[0]!.dataset.location!.place}, ${members[0]!.dataset.location!.country}`,
+        members,
+      }))
+      .filter((m) => new Set(m.members.map(label)).size >= 2)
+      .sort((a, b) => a.name.localeCompare(b.name))
+  }
+
+  async function refreshMarket() {
+    marketError = null
+    const market = markets.find((m) => m.id === marketId)
+    if (!market) {
+      marketLines = []
+      marketCheapest = null
+      return
+    }
+    // A series that is not published yet (new in the manifest, not fetched)
+    // is left out rather than failing the whole market.
+    const settled = await Promise.allSettled(market.members.map(calorieSeries))
+    const ok = market.members
+      .map((c, i) => ({ c, r: settled[i]! }))
+      .filter((x): x is { c: Candidate; r: PromiseFulfilledResult<IndexSeries> } => x.r.status === "fulfilled")
+      .filter((x) => x.r.value.length > 0)
+    marketLines = ok.map((x) => ({ label: marketLabel(x.c), series: x.r.value, color: x.c.color }))
+    const latest = ok
+      .map((x) => x.r.value[x.r.value.length - 1]!.date)
+      .sort()[0]
+    if (latest && ok.length >= 2) {
+      const best = cheapestCalorie(
+        ok.map((x) => ({ id: marketLabel(x.c), series: x.r.value })),
+        [latest]
+      )[0]
+      marketCheapest = best ? { date: best.date, label: best.id, value: best.value } : null
+    } else {
+      marketCheapest = null
+    }
+    if (ok.length < market.members.length) {
+      marketError = `${market.members.length - ok.length} series for this market have no data yet.`
+    }
+  }
+
+  /** The food as the market sells it, e.g. "rice (milled)" or "cassava (flour)". */
+  function marketLabel(c: Candidate): string {
+    return label(c)
+  }
+
+  function selectMarket(id: string) {
+    marketId = id
+    void refreshMarket()
+  }
+
   function toggle(ticker: string) {
     if (selected.has(ticker)) selected.delete(ticker)
     else selected.add(ticker)
@@ -97,8 +168,11 @@
         found.push({ dataset, nutrition: entry, color: COLORS[found.length % COLORS.length]! })
       }
       candidates = found
+      markets = groupMarkets(found)
+      marketId = markets.find((m) => m.id.endsWith(":Niarela"))?.id ?? markets[0]?.id ?? ""
       selected = new Set(DEFAULT_TICKERS.filter((t) => found.some((c) => c.dataset.ticker === t)))
       await refresh()
+      await refreshMarket()
     } catch (err) {
       error = err instanceof Error ? err.message : String(err)
     } finally {
@@ -149,6 +223,32 @@
       </p>
     {/if}
 
+    {#if markets.length > 0}
+      <h2>In one market</h2>
+      <p class="tagline">
+        The same place, different foods: what a calorie costs in a single market, retail,
+        in US dollars at the official exchange rate.
+      </p>
+      <label class="marketpick">
+        Market
+        <select value={marketId} on:change={(e) => selectMarket(e.currentTarget.value)}>
+          {#each markets as m (m.id)}<option value={m.id}>{m.name}</option>{/each}
+        </select>
+      </label>
+      <MultiLineChart lines={marketLines} yLabel="USD per 1,000 kcal" />
+      {#if marketCheapest}
+        <p class="cheapest">
+          Cheapest calorie here on {marketCheapest.date}: <strong>{marketCheapest.label}</strong> at
+          ${marketCheapest.value.toFixed(3)} per 1,000 kcal.
+        </p>
+      {/if}
+      {#if marketError}<p class="meta">{marketError}</p>{/if}
+      <p class="meta">
+        Rice here is imported, so it carries freight and duty that locally grown foods do not.
+        Flours are priced as milled products.
+      </p>
+    {/if}
+
     <p class="meta">
       price per 1,000 kcal = 1000 × price per kg ÷ (kcal per kg × edible fraction).
       Energy values and edible fractions are in <code>data/nutrition.json</code>; ~ marks approximate values.
@@ -179,6 +279,8 @@
   .picker { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin-bottom: 1rem; }
   .choice { font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; }
   .swatch { width: 12px; height: 3px; display: inline-block; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2rem 0 0.25rem; }
+  .marketpick { display: inline-flex; gap: 0.5rem; align-items: center; font-size: 0.85rem; margin: 0.75rem 0; }
   .cheapest { font-size: 0.9rem; margin-top: 0.75rem; }
   .meta { font-size: 0.75rem; color: #9ca3af; margin-top: 0.5rem; }
 </style>
