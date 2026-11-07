@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "updatedAt": "2026-11-07T08:32:43.009Z",
+  "updatedAt": "2026-11-07T22:10:20.239Z",
   "datasets": [
     {
       "ticker": "AAPL",
@@ -577,7 +577,7 @@
         "country": "MLI",
         "place": "Niarela",
         "lat": 12.65,
-        "lon": -8.0,
+        "lon": -8,
         "scope": "market"
       },
       "wfp": {
@@ -605,7 +605,7 @@
         "country": "MLI",
         "place": "Niarela",
         "lat": 12.65,
-        "lon": -8.0,
+        "lon": -8,
         "scope": "market"
       },
       "wfp": {
@@ -633,7 +633,7 @@
         "country": "MLI",
         "place": "Niarela",
         "lat": 12.65,
-        "lon": -8.0,
+        "lon": -8,
         "scope": "market"
       },
       "wfp": {
