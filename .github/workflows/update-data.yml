@@ -4,6 +4,13 @@ on:
   schedule:
     - cron: '0 2 * * 2-6'  # 02:00 UTC Tuesday–Saturday (after US market close Mon–Fri)
   workflow_dispatch:         # allow manual trigger from GitHub UI
+  # Merging a change to this file into main also runs the update. `main` only
+  # accepts pull requests, so a run started this way has been reviewed and
+  # merged by a person. Change the "requested" value to ask for another run.
+  push:
+    branches: [main]
+    paths:
+      - '.github/requests/update-data.json'
 
 jobs:
   update:

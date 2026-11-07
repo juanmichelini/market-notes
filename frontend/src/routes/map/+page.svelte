@@ -4,6 +4,7 @@
     closeIndex,
     majorCurrency,
     observationAt,
+    priceStage,
     pricePerCalorie,
     spreadPercent,
     toPricePerKg,
@@ -12,6 +13,7 @@
     type DatasetMeta,
     type IndexSeries,
     type ISODate,
+    type PriceStage,
     type NutritionTable,
   } from "@market-notes/core"
   import { loadManifest, loadNutrition, loadPriceSeries, loadIndexSeries } from "$lib/data.js"
@@ -29,6 +31,9 @@
   let nutrition: NutritionTable | null = null
   let products: string[] = []
   let product = ""
+  /** Which stage of the supply chain to draw; "" draws all stages together. */
+  let stage: PriceStage | "" = ""
+  let stages: PriceStage[] = []
   let metric: Metric = "usd_t"
   /** Ticker of the reference market for the spread overlay; "" for none. */
   let reference = ""
@@ -44,12 +49,13 @@
   const converted = new Map<string, IndexSeries | null>()
   let timer: ReturnType<typeof setInterval> | undefined
 
-  $: productDatasets = located.filter((d) => d.product === product)
+  $: productDatasets = located.filter((d) => d.product === product && (stage === "" || priceStage(d) === stage))
   $: date = dates[dateIdx]
   $: priced = ready && date ? computeMarkers(productDatasets, date, metric, raw) : []
   $: shown = applySpread(priced, reference)
   $: markers = shown.markers
   $: diverging = shown.active
+  $: mixed = stage === "" && stages.length > 1
   $: referenceNote = reference && !shown.active ? "The reference market has no price on this date." : ""
   $: unitLabel = diverging
     ? "% above (+) or below (−) reference"
@@ -144,6 +150,14 @@
     stop()
     product = next
     reference = ""
+    // Start with the stage that has the most markets, so the first picture compares like with like.
+    const counts = new Map<PriceStage, number>()
+    for (const d of located) {
+      const st = d.product === next ? priceStage(d) : undefined
+      if (st) counts.set(st, (counts.get(st) ?? 0) + 1)
+    }
+    stages = [...counts.keys()].sort((a, b) => counts.get(b)! - counts.get(a)!)
+    stage = stages[0] ?? ""
     ready = false
     error = null
     try {
@@ -170,6 +184,12 @@
     } catch (err) {
       error = err instanceof Error ? err.message : String(err)
     }
+  }
+
+  function selectStage(next: string) {
+    stop()
+    stage = next === "" ? "" : (next as PriceStage)
+    reference = ""
   }
 
   function setMetric(next: Metric) {
@@ -241,6 +261,16 @@
         </select>
       </label>
 
+      {#if stages.length > 1}
+        <label>
+          Stage
+          <select value={stage} on:change={(e) => selectStage(e.currentTarget.value)}>
+            {#each stages as st (st)}<option value={st}>{st}</option>{/each}
+            <option value="">all stages (not like for like)</option>
+          </select>
+        </label>
+      {/if}
+
       <label>
         Spread vs
         <select bind:value={reference}>
@@ -259,6 +289,12 @@
 
     <PriceMap {markers} {unitLabel} {countries} {diverging} />
     {#if referenceNote}<p class="meta">{referenceNote}</p>{/if}
+    {#if mixed}
+      <p class="meta">
+        This mixes prices quoted at different stages (exchange, export, wholesale, retail). Differences between
+        them mostly reflect freight, milling and margins, not place. Choose one stage to compare like with like.
+      </p>
+    {/if}
 
     {#if dates.length > 0}
       <div class="slider">
