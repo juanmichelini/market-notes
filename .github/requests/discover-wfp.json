@@ -1,0 +1,8 @@
+{
+  "countries": "bangladesh,pakistan,afghanistan,nepal,mali,niger,burkina-faso,democratic-republic-of-the-congo,burundi",
+  "commodity": "^(Maize|Rice|Wheat|Potato|Cassava|Soy|Sweet potato|Yam|Sorghum|Plantain)",
+  "min_rows": 60,
+  "mode": "list",
+  "recent_from": "2024-01-01",
+  "issue": 105
+}
