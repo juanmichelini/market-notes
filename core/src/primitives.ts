@@ -347,3 +347,31 @@ export function resistanceLine(options: LineOptions = {}): Pattern {
   return (series, from, to) => findLines("resistance", series, from, to, minLength, maxLength)
 }
 
+/**
+ * Builds the pattern of a support line: a line that prices do not fall below,
+ * touched at least twice. It is the mirror image of `resistanceLine`.
+ *
+ * An instance spans bars a < b and has a line
+ *
+ *   price(t) = intercept + slope × t
+ *
+ * through the lows at two bars u < v (its *touches*) such that
+ *
+ *   a < u < v < b                       (the touches lie strictly inside the span)
+ *   low(t) ≥ price(t)  for every t in [a, b]      (no low is below the line)
+ *
+ * The landmarks are [a, b]. These lines are exactly the edges of the lower
+ * convex hull of the lows that do not touch the ends of the span; they are
+ * found by running the resistance search on the negated lows and negating the
+ * result. The score is 1. Spans range from `minLength` to `maxLength` bar
+ * steps, and spans that contain a missing (NaN) low are skipped.
+ *
+ * @param options - See `LineOptions`.
+ * @throws {Error} if the options are invalid.
+ * @returns A `Pattern` whose instances are `LineInstance`s with landmarks [a, b], ascending by (a, b).
+ */
+export function supportLine(options: LineOptions = {}): Pattern {
+  const [minLength, maxLength] = resolveLineOptions(options, "supportLine")
+  return (series, from, to) => findLines("support", series, from, to, minLength, maxLength)
+}
+

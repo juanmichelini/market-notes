@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { bar, up, down, horizontal, resistanceLine } from "../src/primitives.js"
+import { bar, up, down, horizontal, resistanceLine, supportLine } from "../src/primitives.js"
 import { landmarks, type Instance, type LineInstance } from "../src/patterns.js"
 import { isoDate, type PriceSeries } from "../src/types.js"
 
@@ -360,6 +360,68 @@ describe("resistanceLine", () => {
   it("scores every instance 1", () => {
     const found = resistanceLine()(randomWalk(100, 5), 0, 99)
     expect(found.every((i) => i.score === 1)).toBe(true)
+  })
+})
+
+describe("supportLine", () => {
+  // Lows 9, 5, 7, 5, 8: the two troughs at bars 1 and 3 define a flat line at 5.
+  const troughs = makeSeries([10, 6, 8, 6, 9], [9, 5, 7, 5, 8])
+
+  it("finds the flat line through two equal troughs, with its touches, slope and intercept", () => {
+    expect(supportLine()(troughs, 0, 4)).toEqual([
+      { kind: "support", landmarks: [0, 4], touches: [1, 3], slope: 0, intercept: 5, score: 1 },
+    ])
+  })
+
+  it("finds a sloped line through two falling troughs", () => {
+    // Lows 5, 3, 3.5, 1, 2: the troughs at bars 1 and 3 lie on price = 4 − t.
+    const s = makeSeries([6, 4, 4.5, 2, 3], [5, 3, 3.5, 1, 2])
+    expect(supportLine()(s, 0, 4)).toEqual([
+      { kind: "support", landmarks: [0, 4], touches: [1, 3], slope: -1, intercept: 4, score: 1 },
+    ])
+  })
+
+  it("mirrors resistanceLine: negating the series swaps the two", () => {
+    const s = randomWalk(150, 13)
+    const negated = s.map((row) => ({
+      ...row,
+      ohlcv: { ...row.ohlcv, high: -row.ohlcv.low, low: -row.ohlcv.high },
+    }))
+    const support = lines(supportLine()(s, 0, 149))
+    const resistance = lines(resistanceLine()(negated, 0, 149))
+    expect(support.length).toBeGreaterThan(0)
+    expect(support.map((l) => [l.landmarks, l.touches])).toEqual(
+      resistance.map((l) => [l.landmarks, l.touches])
+    )
+  })
+
+  it("never has a low below the line anywhere in its span", () => {
+    const s = randomWalk(300, 17)
+    const found = lines(supportLine()(s, 0, 299))
+    const violations = found.filter((line) => {
+      const [a, b] = line.landmarks
+      for (let t = a; t <= b; t++) {
+        if (s[t]!.ohlcv.low < line.intercept + line.slope * t - 1e-9) return true
+      }
+      return false
+    })
+    expect(found.length).toBeGreaterThan(0)
+    expect(violations).toHaveLength(0)
+  })
+
+  it("respects maxLength and minLength", () => {
+    expect(supportLine({ maxLength: 3 })(troughs, 0, 4)).toHaveLength(0)
+    expect(supportLine({ minLength: 5 })(troughs, 0, 4)).toHaveLength(0)
+  })
+
+  it("rejects invalid options, naming supportLine", () => {
+    expect(() => supportLine({ minLength: 2 })).toThrow("supportLine")
+    expect(() => supportLine({ minLength: 5, maxLength: 4 })).toThrow("supportLine")
+  })
+
+  it("never reports a line over a missing low", () => {
+    const s = makeSeries([10, 6, 8, 6, 9], [9, 5, NaN, 5, 8])
+    expect(supportLine()(s, 0, 4)).toHaveLength(0)
   })
 })
 
