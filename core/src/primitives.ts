@@ -63,3 +63,49 @@ export const bar: Pattern = (series, from, to) => {
   return out
 }
 
+/**
+ * The pattern of a rise.
+ *
+ * An instance spans bars a < b such that the price made higher highs all the
+ * way and never gave back its starting low:
+ *
+ *   high(t) < high(b)   for every bar t with a ≤ t < b
+ *   low(t)  > low(a)    for every bar t with a < t ≤ b
+ *
+ * The landmarks are [a, b]. Every pair (a, b) inside the interval that
+ * satisfies both conditions is an instance, so a long rise also contains
+ * the shorter rises within it. Instances are crisp: the score is 1. If you
+ * want only maximal rises, filter the result.
+ *
+ * Implementation note: for a fixed start a, the largest earlier high is
+ * tracked as b advances and the search stops at the first low that is not
+ * above low(a), because no longer rise from a can contain that bar. This
+ * makes the search O(n²) in the number of bars rather than O(n³).
+ *
+ * A missing (NaN) high or low ends the search from that start.
+ *
+ * @param series - The price series searched.
+ * @param from   - The first bar of the interval (inclusive).
+ * @param to     - The last bar of the interval (inclusive).
+ * @returns Instances with two landmarks [a, b], ascending by (a, b).
+ */
+export const up: Pattern = (series, from, to) => {
+  const range = clipInterval(series, from, to)
+  if (range === undefined) return []
+  const [lo, hi] = range
+  const out: ShapeInstance[] = []
+  for (let a = lo; a < hi; a++) {
+    const { high: highA, low: lowA } = series[a]!.ohlcv
+    let highestSoFar = highA // largest high over [a, b - 1]
+    for (let b = a + 1; b <= hi; b++) {
+      const { high, low } = series[b]!.ohlcv
+      if (!(low > lowA) || Number.isNaN(high)) break
+      if (high > highestSoFar) {
+        out.push({ kind: "up", landmarks: [a, b], score: 1 })
+        highestSoFar = high
+      }
+    }
+  }
+  return out
+}
+
