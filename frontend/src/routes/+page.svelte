@@ -62,6 +62,7 @@
       <a href="/ratios" class="nav-link">Macro Ratios →</a>
       <a href="/calories" class="nav-link">Price of a Calorie →</a>
       <a href="/map" class="nav-link">Price Map →</a>
+      <a href="/patterns" class="nav-link">Pattern Detection →</a>
     </nav>
   </header>
 
