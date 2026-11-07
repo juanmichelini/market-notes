@@ -1,0 +1,65 @@
+name: CI
+
+# Runs the core tests and the typecheck of every package on each pull request.
+# If a check fails, the tail of the log is posted as a comment on the pull
+# request, so the failure can be read without opening the Actions logs.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build core
+        run: pnpm --filter core run build
+
+      # The frontend tsconfig extends a file that SvelteKit generates.
+      - name: Generate SvelteKit types
+        run: pnpm --filter frontend exec svelte-kit sync
+
+      - name: Test and typecheck
+        run: |
+          set +e
+          status=0
+          : > ci.log
+          for cmd in "pnpm test" "pnpm typecheck"; do
+            echo "### $cmd" | tee -a ci.log
+            $cmd 2>&1 | tee -a ci.log
+            if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+              echo "FAILED: $cmd" | tee -a ci.log
+              status=1
+            fi
+          done
+          exit $status
+
+      - name: Post the failure log on the pull request
+        if: failure() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          {
+            echo "CI failed. Last part of the log:"
+            echo '```'
+            tail -c 30000 ci.log
+            echo '```'
+          } > comment.md
+          gh pr comment "$PR" --body-file comment.md
