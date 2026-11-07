@@ -24,7 +24,7 @@
  */
 
 import type { PriceSeries } from "./types.js"
-import type { Bar, Pattern, ShapeInstance } from "./patterns.js"
+import type { Bar, LineInstance, Pattern, ShapeInstance } from "./patterns.js"
 import { approxEqual, type Fuzzy } from "./fuzzy.js"
 
 /**
@@ -206,5 +206,144 @@ export function horizontal(options: HorizontalOptions = {}): Pattern {
     // Instances were found by end bar; the contract orders them by start bar first.
     return out.sort((x, y) => x.landmarks[0]! - y.landmarks[0]! || x.landmarks[1]! - y.landmarks[1]!)
   }
+}
+
+// ---------------------------------------------------------------------------
+// Lines: resistance and support
+// ---------------------------------------------------------------------------
+
+/** Options for `resistanceLine` and `supportLine`. Lengths count bar steps, b − a. */
+export interface LineOptions {
+  /**
+   * The shortest span to report, in bar steps (last bar minus first bar).
+   * Must be an integer ≥ 3: a span needs two touches strictly inside it, so
+   * at least four bars. Defaults to 3.
+   */
+  readonly minLength?: number
+  /**
+   * The longest span to report, in bar steps. Must be an integer ≥
+   * `minLength`. Bounds the number of instances and the work done. Defaults
+   * to 60.
+   */
+  readonly maxLength?: number
+}
+
+const DEFAULT_MIN_LINE_LENGTH = 3
+const DEFAULT_MAX_LINE_LENGTH = 60
+
+/**
+ * Finds the resistance lines (side "upper") or support lines (side "lower")
+ * of every span of bars inside [from, to].
+ *
+ * For a span [a, b] and the series y(t) of highs (upper) or negated lows
+ * (lower), the candidate lines are the edges of the *upper convex hull* of
+ * the points (t, y(t)) for t in [a, b]. An edge of the upper hull is exactly
+ * a line through two of the points that no point lies above, so every edge
+ * is a valid line and every valid line through two touches is an edge.
+ * Edges that start at bar a or end at bar b are skipped: the touches must lie
+ * strictly inside the span, as in CPL. Support lines are found as resistance
+ * lines of the negated lows, and mapped back.
+ *
+ * For a fixed start a the hull is extended one bar at a time, which keeps the
+ * work per span proportional to the size of the hull, not the span.
+ */
+function findLines(
+  kind: "resistance" | "support",
+  series: PriceSeries,
+  from: Bar,
+  to: Bar,
+  minLength: number,
+  maxLength: number
+): LineInstance[] {
+  const range = clipInterval(series, from, to)
+  if (range === undefined) return []
+  const [lo, hi] = range
+  const sign = kind === "resistance" ? 1 : -1
+  const y = (t: Bar): number => sign * (kind === "resistance" ? series[t]!.ohlcv.high : series[t]!.ohlcv.low)
+
+  // Positive when o → p → q turns counter-clockwise; the upper hull keeps only right turns.
+  const cross = (o: Bar, p: Bar, q: Bar): number => (p - o) * (y(q) - y(o)) - (y(p) - y(o)) * (q - o)
+
+  const out: LineInstance[] = []
+  for (let a = lo; a <= hi - minLength; a++) {
+    if (!Number.isFinite(y(a))) continue
+    const hull: Bar[] = [a]
+    const last = Math.min(hi, a + maxLength)
+    for (let b = a + 1; b <= last; b++) {
+      if (!Number.isFinite(y(b))) break
+      while (hull.length >= 2 && cross(hull[hull.length - 2]!, hull[hull.length - 1]!, b) >= 0) {
+        hull.pop()
+      }
+      hull.push(b)
+      if (b - a < minLength) continue
+      // Hull vertices 1 .. length − 2 are strictly inside the span.
+      for (let k = 1; k <= hull.length - 3; k++) {
+        const u = hull[k]!
+        const v = hull[k + 1]!
+        const slopeY = (y(v) - y(u)) / (v - u)
+        const interceptY = y(u) - slopeY * u
+        // "+ 0" turns a negative zero into 0, so a flat line has slope 0 on either side.
+        out.push({
+          kind,
+          landmarks: [a, b],
+          touches: [u, v],
+          slope: sign * slopeY + 0,
+          intercept: sign * interceptY + 0,
+          score: 1,
+        })
+      }
+    }
+  }
+  return out
+}
+
+/**
+ * Checks the length options shared by `resistanceLine` and `supportLine` and
+ * returns them with defaults applied.
+ *
+ * @throws {Error} if a length is not an integer, `minLength` is below 3, or
+ *         `maxLength` is below `minLength`; the message names `who`.
+ */
+function resolveLineOptions(options: LineOptions, who: string): readonly [number, number] {
+  const minLength = options.minLength ?? DEFAULT_MIN_LINE_LENGTH
+  const maxLength = options.maxLength ?? DEFAULT_MAX_LINE_LENGTH
+  if (!Number.isInteger(minLength) || minLength < DEFAULT_MIN_LINE_LENGTH) {
+    throw new Error(`${who}: minLength must be an integer ≥ ${DEFAULT_MIN_LINE_LENGTH}, got ${minLength}.`)
+  }
+  if (!Number.isInteger(maxLength) || maxLength < minLength) {
+    throw new Error(`${who}: maxLength must be an integer ≥ minLength (${minLength}), got ${maxLength}.`)
+  }
+  return [minLength, maxLength]
+}
+
+/**
+ * Builds the pattern of a resistance line: a line that prices do not rise
+ * above, touched at least twice.
+ *
+ * An instance spans bars a < b and has a line
+
+ *   price(t) = intercept + slope × t
+ *
+ * through the highs at two bars u < v (its *touches*) such that
+ *
+ *   a < u < v < b                       (the touches lie strictly inside the span)
+ *   high(t) ≤ price(t)  for every t in [a, b]     (no high is above the line)
+ *
+ * The landmarks are [a, b]. For each span there is one instance per such line,
+ * and these lines are exactly the edges of the upper convex hull of the highs
+ * that do not touch the ends of the span (see `findLines`). Prices that merely
+ * come close to a line do not count: the touches are exact, and the score is 1.
+ *
+ * Spans range from `minLength` to `maxLength` bar steps, which keeps the
+ * number of instances and the work bounded on long series. Spans that contain
+ * a missing (NaN) high are skipped.
+ *
+ * @param options - See `LineOptions`.
+ * @throws {Error} if the options are invalid.
+ * @returns A `Pattern` whose instances are `LineInstance`s with landmarks [a, b], ascending by (a, b).
+ */
+export function resistanceLine(options: LineOptions = {}): Pattern {
+  const [minLength, maxLength] = resolveLineOptions(options, "resistanceLine")
+  return (series, from, to) => findLines("resistance", series, from, to, minLength, maxLength)
 }
 

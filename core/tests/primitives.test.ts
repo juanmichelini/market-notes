@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
-import { bar, up, down, horizontal } from "../src/primitives.js"
-import { landmarks, type Instance } from "../src/patterns.js"
+import { bar, up, down, horizontal, resistanceLine } from "../src/primitives.js"
+import { landmarks, type Instance, type LineInstance } from "../src/patterns.js"
 import { isoDate, type PriceSeries } from "../src/types.js"
 
 // ---------------------------------------------------------------------------
@@ -245,6 +245,121 @@ describe("horizontal", () => {
 
   it("rejects a negative width when the pattern is built", () => {
     expect(() => horizontal({ width: -1 })).toThrow("horizontal")
+  })
+})
+
+// ---------------------------------------------------------------------------
+// resistanceLine
+// ---------------------------------------------------------------------------
+
+/** A deterministic pseudo-random walk of `n` bars, for property tests. */
+function randomWalk(n: number, seed: number): PriceSeries {
+  let x = seed
+  const next = (): number => {
+    x = (x * 1664525 + 1013904223) % 4294967296
+    return x / 4294967296
+  }
+  const highs: number[] = []
+  const lows: number[] = []
+  let price = 100
+  for (let i = 0; i < n; i++) {
+    price += (next() - 0.5) * 4
+    highs.push(price + next())
+    lows.push(price - next())
+  }
+  return makeSeries(highs, lows)
+}
+
+/** The instances of `pattern` that are lines, so their fields can be inspected. */
+function lines(instances: ReadonlyArray<Instance>): ReadonlyArray<LineInstance> {
+  return instances.filter((i): i is LineInstance => i.kind === "resistance" || i.kind === "support")
+}
+
+describe("resistanceLine", () => {
+  // Highs 1, 5, 3, 5, 2: the two peaks at bars 1 and 3 define a flat line at 5.
+  const peaks = makeSeries([1, 5, 3, 5, 2], [0, 4, 2, 4, 1])
+
+  it("finds the flat line through two equal peaks, with its touches, slope and intercept", () => {
+    expect(resistanceLine()(peaks, 0, 4)).toEqual([
+      { kind: "resistance", landmarks: [0, 4], touches: [1, 3], slope: 0, intercept: 5, score: 1 },
+    ])
+  })
+
+  it("finds a sloped line through two rising peaks", () => {
+    // Highs 0, 2, 1.5, 4, 3: the peaks at bars 1 and 3 lie on price = 1 + t.
+    const s = makeSeries([0, 2, 1.5, 4, 3], [-1, 1, 0.5, 3, 2])
+    expect(resistanceLine()(s, 0, 4)).toEqual([
+      { kind: "resistance", landmarks: [0, 4], touches: [1, 3], slope: 1, intercept: 1, score: 1 },
+    ])
+  })
+
+  it("finds nothing when the highs are perfectly collinear (no two interior touches)", () => {
+    const s = makeSeries([1, 2, 3, 4, 5], [0, 1, 2, 3, 4])
+    expect(resistanceLine()(s, 0, 4)).toHaveLength(0)
+  })
+
+  it("never has a high above the line anywhere in its span", () => {
+    const s = randomWalk(300, 7)
+    const found = lines(resistanceLine()(s, 0, 299))
+    const violations = found.filter((line) => {
+      const [a, b] = line.landmarks
+      for (let t = a; t <= b; t++) {
+        if (s[t]!.ohlcv.high > line.intercept + line.slope * t + 1e-9) return true
+      }
+      return false
+    })
+    expect(found.length).toBeGreaterThan(0)
+    expect(violations).toHaveLength(0)
+  })
+
+  it("has the highs at its two touches on the line, strictly inside its span", () => {
+    const s = randomWalk(200, 11)
+    const found = lines(resistanceLine()(s, 0, 199))
+    const bad = found.filter((line) => {
+      const [a, b] = line.landmarks
+      const [u, v] = line.touches
+      const onLine = (t: number) => Math.abs(s[t]!.ohlcv.high - (line.intercept + line.slope * t)) < 1e-9
+      return !(a < u && u < v && v < b && onLine(u) && onLine(v))
+    })
+    expect(bad).toHaveLength(0)
+  })
+
+  it("lists instances in ascending order of start, then end", () => {
+    const found = resistanceLine()(randomWalk(120, 3), 0, 119)
+    const keys = found.map((i) => landmarks(i)[0]! * 1000 + landmarks(i)[1]!)
+    expect(keys).toEqual([...keys].sort((x, y) => x - y))
+  })
+
+  it("only reports lines whose span lies entirely inside the interval", () => {
+    const s = makeSeries([9, 1, 5, 3, 5, 2], [8, 0, 4, 2, 4, 1])
+    expect(resistanceLine()(s, 1, 5).map((i) => landmarks(i))).toEqual([[1, 5]])
+    expect(resistanceLine()(s, 0, 4)).toHaveLength(0)
+  })
+
+  it("respects maxLength: a span of 4 steps is too long for maxLength 3", () => {
+    expect(resistanceLine({ maxLength: 3 })(peaks, 0, 4)).toHaveLength(0)
+  })
+
+  it("respects minLength: a span of 4 steps is too short for minLength 5", () => {
+    expect(resistanceLine({ minLength: 5 })(peaks, 0, 4)).toHaveLength(0)
+  })
+
+  it("rejects a minLength below 3, since two interior touches need 4 bars", () => {
+    expect(() => resistanceLine({ minLength: 2 })).toThrow("resistanceLine")
+  })
+
+  it("rejects a maxLength below minLength", () => {
+    expect(() => resistanceLine({ minLength: 5, maxLength: 4 })).toThrow("resistanceLine")
+  })
+
+  it("never reports a line over a missing high", () => {
+    const s = makeSeries([1, 5, NaN, 5, 2], [0, 4, 2, 4, 1])
+    expect(resistanceLine()(s, 0, 4)).toHaveLength(0)
+  })
+
+  it("scores every instance 1", () => {
+    const found = resistanceLine()(randomWalk(100, 5), 0, 99)
+    expect(found.every((i) => i.score === 1)).toBe(true)
   })
 })
 
