@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { daysBetween, observationAt, spreadPercent } from "../src/markets.js"
+import { daysBetween, observationAt, priceStage, spreadPercent } from "../src/markets.js"
 import { isoDate, type IndexRow } from "../src/types.js"
 
 function indexRow(date: string, value: number): IndexRow {
@@ -115,5 +115,51 @@ describe("spreadPercent", () => {
 
   it("is NaN when the price is missing", () => {
     expect(spreadPercent(NaN, 250)).toBeNaN()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// priceStage
+// ---------------------------------------------------------------------------
+
+describe("priceStage", () => {
+  const where = (scope: "exchange" | "port" | "market" | "national") => ({
+    country: "USA",
+    place: "x",
+    lat: 0,
+    lon: 0,
+    scope,
+  })
+  const wfp = (pricetype: "Retail" | "Wholesale") => ({
+    country: "mali",
+    market: "x",
+    commodity: "Maize",
+    unit: "KG",
+    pricetype,
+  })
+
+  it("calls an exchange quote exchange", () => {
+    expect(priceStage({ location: where("exchange") })).toBe("exchange")
+  })
+
+  it("calls a port price export", () => {
+    expect(priceStage({ location: where("port") })).toBe("export")
+  })
+
+  it("calls a national average national", () => {
+    expect(priceStage({ location: where("national") })).toBe("national")
+  })
+
+  it("reads a market price's stage from its WFP price type", () => {
+    expect(priceStage({ location: where("market"), wfp: wfp("Wholesale") })).toBe("wholesale")
+    expect(priceStage({ location: where("market"), wfp: wfp("Retail") })).toBe("retail")
+  })
+
+  it("treats a market price with no price type as retail", () => {
+    expect(priceStage({ location: where("market") })).toBe("retail")
+  })
+
+  it("returns undefined when the dataset has no location", () => {
+    expect(priceStage({})).toBeUndefined()
   })
 })
