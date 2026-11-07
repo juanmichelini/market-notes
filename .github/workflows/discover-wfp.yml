@@ -1,11 +1,21 @@
 name: Discover WFP series
 
-# Manual only. Lists the WFP market series for a commodity in some countries
-# so manifest entries can use the exact market/commodity/unit/pricetype
-# strings. It changes no files. The report is in the run summary, as an
-# artifact, and as a comment on the chosen issue (readable through the API).
+# Lists the WFP market series for a commodity in some countries so manifest
+# entries can use the exact market/commodity/unit/pricetype strings. It
+# changes no files. The report is in the run summary, as an artifact, and as
+# a comment on the chosen issue (readable through the API).
+#
+# Two ways to start it:
+#   1. Run workflow (workflow_dispatch) from the Actions tab, with a form.
+#   2. Merge a change to .github/requests/discover-wfp.json into main. The
+#      file holds the same fields as the form. Because main only accepts pull
+#      requests, a run started this way has always been reviewed and merged.
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/requests/discover-wfp.json'
   workflow_dispatch:
     inputs:
       countries:
@@ -51,13 +61,44 @@ jobs:
         with:
           node-version: '22'
 
-      - name: List matching series
+      - name: Resolve parameters
         env:
-          COUNTRIES: ${{ inputs.countries }}
-          COMMODITY: ${{ inputs.commodity }}
-          MIN_ROWS: ${{ inputs.min_rows }}
-          MODE: ${{ inputs.mode }}
-          RECENT_FROM: ${{ inputs.recent_from }}
+          IN_COUNTRIES: ${{ inputs.countries }}
+          IN_COMMODITY: ${{ inputs.commodity }}
+          IN_MIN_ROWS: ${{ inputs.min_rows }}
+          IN_MODE: ${{ inputs.mode }}
+          IN_RECENT_FROM: ${{ inputs.recent_from }}
+          IN_ISSUE: ${{ inputs.issue }}
+        run: |
+          # From the form when dispatched by hand, otherwise from the request file.
+          # Every value must be a single line of safe characters before it is
+          # exported to the later steps.
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            f=.github/requests/discover-wfp.json
+            IN_COUNTRIES=$(jq -er '.countries' "$f")
+            IN_COMMODITY=$(jq -er '.commodity' "$f")
+            IN_MIN_ROWS=$(jq -er '.min_rows // 60' "$f")
+            IN_MODE=$(jq -er '.mode // "summary"' "$f")
+            IN_RECENT_FROM=$(jq -er '.recent_from // "2024-01-01"' "$f")
+            IN_ISSUE=$(jq -er '.issue // 105' "$f")
+          fi
+          check() { printf '%s' "$2" | grep -Ezq "$3" || { echo "Bad $1: $2" >&2; exit 1; }; }
+          check countries   "$IN_COUNTRIES"   '^[a-z-]+(,[a-z-]+)*$'
+          check commodity   "$IN_COMMODITY"   '^[A-Za-z0-9 ^|()._*+?-]+$'
+          check min_rows    "$IN_MIN_ROWS"    '^[0-9]+$'
+          check mode        "$IN_MODE"        '^(list|summary)$'
+          check recent_from "$IN_RECENT_FROM" '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+          check issue       "$IN_ISSUE"       '^[0-9]+$'
+          {
+            echo "COUNTRIES=$IN_COUNTRIES"
+            echo "COMMODITY=$IN_COMMODITY"
+            echo "MIN_ROWS=$IN_MIN_ROWS"
+            echo "MODE=$IN_MODE"
+            echo "RECENT_FROM=$IN_RECENT_FROM"
+            echo "ISSUE=$IN_ISSUE"
+          } >> "$GITHUB_ENV"
+
+      - name: List matching series
         run: |
           node fetcher/scripts/discover-wfp.mjs "$COUNTRIES" "$COMMODITY" "$MIN_ROWS" "$MODE" "$RECENT_FROM" | tee report.md >> "$GITHUB_STEP_SUMMARY"
 
@@ -69,7 +110,6 @@ jobs:
       - name: Post the report on the chosen issue
         env:
           GH_TOKEN: ${{ github.token }}
-          ISSUE: ${{ inputs.issue }}
         run: |
           # GitHub comments are limited to 65,536 characters.
           head -c 60000 report.md > comment.md
