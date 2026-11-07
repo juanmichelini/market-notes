@@ -14,7 +14,7 @@
  * price observed today from one that is two months old.
  */
 
-import type { ISODate, IndexSeries } from "./types.js"
+import type { DatasetMeta, ISODate, IndexSeries } from "./types.js"
 
 /**
  * Number of whole days from `from` to `to` (negative if `to` is earlier).
@@ -115,4 +115,32 @@ export function observationAt(
 export function spreadPercent(price: number, reference: number): number {
   if (!Number.isFinite(reference) || reference <= 0 || !Number.isFinite(price)) return NaN
   return 100 * (price / reference - 1)
+}
+
+/**
+ * The step in the supply chain at which a price is quoted. A futures price,
+ * an export price and a shop price for the same grain differ by freight,
+ * duties, milling and margins, so a map that colours them on one scale
+ * mostly measures the difference in stage, not in place.
+ */
+export type PriceStage = "exchange" | "export" | "wholesale" | "retail" | "national"
+
+/**
+ * Names the stage of a dataset from what its manifest entry already says:
+ *
+ *   - `exchange` : a futures or exchange quote;
+ *   - `export`   : a price at a port, free on board;
+ *   - `wholesale` or `retail` : a WFP market price, by its price type;
+ *   - `national` : a national average (the US retail potato price, say).
+ *
+ * Returns undefined for a dataset with no location, since its stage is not
+ * recorded.
+ */
+export function priceStage(dataset: Pick<DatasetMeta, "location" | "wfp">): PriceStage | undefined {
+  const scope = dataset.location?.scope
+  if (scope === undefined) return undefined
+  if (scope === "exchange") return "exchange"
+  if (scope === "port") return "export"
+  if (scope === "national") return "national"
+  return dataset.wfp?.pricetype === "Wholesale" ? "wholesale" : "retail"
 }
