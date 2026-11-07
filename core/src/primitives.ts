@@ -109,3 +109,43 @@ export const up: Pattern = (series, from, to) => {
   return out
 }
 
+/**
+ * The pattern of a fall: the mirror image of `up`.
+ *
+ * An instance spans bars a < b such that the price made lower lows all the
+ * way and never rose back above its starting high:
+ *
+ *   low(t)  > low(b)    for every bar t with a ≤ t < b
+ *   high(t) < high(a)   for every bar t with a < t ≤ b
+ *
+ * The landmarks are [a, b]. Every pair (a, b) inside the interval that
+ * satisfies both conditions is an instance, so a long fall also contains the
+ * shorter falls within it. Instances are crisp: the score is 1. The search
+ * is O(n²), as for `up`, and a missing (NaN) high or low ends the search from
+ * that start.
+ *
+ * @param series - The price series searched.
+ * @param from   - The first bar of the interval (inclusive).
+ * @param to     - The last bar of the interval (inclusive).
+ * @returns Instances with two landmarks [a, b], ascending by (a, b).
+ */
+export const down: Pattern = (series, from, to) => {
+  const range = clipInterval(series, from, to)
+  if (range === undefined) return []
+  const [lo, hi] = range
+  const out: ShapeInstance[] = []
+  for (let a = lo; a < hi; a++) {
+    const { high: highA, low: lowA } = series[a]!.ohlcv
+    let lowestSoFar = lowA // smallest low over [a, b - 1]
+    for (let b = a + 1; b <= hi; b++) {
+      const { high, low } = series[b]!.ohlcv
+      if (!(high < highA) || Number.isNaN(low)) break
+      if (low < lowestSoFar) {
+        out.push({ kind: "down", landmarks: [a, b], score: 1 })
+        lowestSoFar = low
+      }
+    }
+  }
+  return out
+}
+

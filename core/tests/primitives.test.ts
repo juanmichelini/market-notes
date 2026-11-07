@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { bar, up } from "../src/primitives.js"
+import { bar, up, down } from "../src/primitives.js"
 import { landmarks, type Instance } from "../src/patterns.js"
 import { isoDate, type PriceSeries } from "../src/types.js"
 
@@ -118,6 +118,68 @@ describe("up", () => {
   it("never reports a rise that starts or ends on a missing low", () => {
     const s = makeSeries([1, 2, 3], [NaN, 1.5, 2.5])
     expect(lms(up(s, 0, 2))).toEqual([[1, 2]])
+  })
+})
+
+// ---------------------------------------------------------------------------
+// down
+// ---------------------------------------------------------------------------
+
+describe("down", () => {
+  it("finds every fall in a steadily falling series, ascending by start then end", () => {
+    const s = makeSeries([3, 2, 1], [2.5, 1.5, 0.5])
+    expect(lms(down(s, 0, 2))).toEqual([[0, 1], [0, 2], [1, 2]])
+  })
+
+  it("finds nothing in a rising series", () => {
+    const s = makeSeries([1, 2, 3], [0.5, 1.5, 2.5])
+    expect(down(s, 0, 2)).toHaveLength(0)
+  })
+
+  it("stops extending a fall once a high rises to or above the starting high", () => {
+    // From bar 0 the high at bar 2 (5) is above the starting high (4), so only [0, 1] survives.
+    const s = makeSeries([4, 3, 5, 2], [3, 2, 1, 0.5])
+    expect(lms(down(s, 0, 3))).toEqual([[0, 1], [2, 3]])
+  })
+
+  it("requires the low at the end to be below every earlier low in the fall", () => {
+    // Bar 0 has the lowest low, so nothing that starts at bar 0 qualifies.
+    const s = makeSeries([3, 3, 2], [1, 3, 2])
+    expect(lms(down(s, 0, 2))).toEqual([[1, 2]])
+  })
+
+  it("scores every instance 1", () => {
+    const s = makeSeries([3, 2, 1], [2.5, 1.5, 0.5])
+    expect(down(s, 0, 2).map((i) => i.score)).toEqual([1, 1, 1])
+  })
+
+  it("gives nothing for an interval of a single bar", () => {
+    const s = makeSeries([3, 2, 1], [2.5, 1.5, 0.5])
+    expect(down(s, 1, 1)).toHaveLength(0)
+  })
+
+  it("only reports falls that lie entirely inside the interval", () => {
+    const s = makeSeries([4, 3, 2, 1], [3.5, 2.5, 1.5, 0.5])
+    expect(lms(down(s, 1, 2))).toEqual([[1, 2]])
+  })
+
+  it("never reports a fall that spans a missing low", () => {
+    const s = makeSeries([3, 2, 1], [2.5, NaN, 0.5])
+    expect(down(s, 0, 2)).toHaveLength(0)
+  })
+
+  it("never reports a fall that starts or ends on a missing high", () => {
+    const s = makeSeries([NaN, 2, 1], [2.5, 1.5, 0.5])
+    expect(lms(down(s, 0, 2))).toEqual([[1, 2]])
+  })
+
+  it("mirrors up: a series and its negation give the same instances", () => {
+    const highs = [1, 2, 3, 4, 2, 6]
+    const lows = [0.5, 1.5, 2.5, 3.5, 1.5, 5.5]
+    const rising = makeSeries(highs, lows)
+    // Negating prices swaps the roles of highs and lows.
+    const mirrored = makeSeries(lows.map((l) => -l), highs.map((h) => -h))
+    expect(lms(down(mirrored, 0, 5))).toEqual(lms(up(rising, 0, 5)))
   })
 })
 
