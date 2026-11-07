@@ -186,9 +186,9 @@
     }
   }
 
-  function selectStage(next: PriceStage | "") {
+  function selectStage(next: string) {
     stop()
-    stage = next
+    stage = next === "" ? "" : (next as PriceStage)
     reference = ""
   }
 
@@ -264,7 +264,7 @@
       {#if stages.length > 1}
         <label>
           Stage
-          <select value={stage} on:change={(e) => selectStage(e.currentTarget.value as PriceStage | "")}>
+          <select value={stage} on:change={(e) => selectStage(e.currentTarget.value)}>
             {#each stages as st (st)}<option value={st}>{st}</option>{/each}
             <option value="">all stages (not like for like)</option>
           </select>
