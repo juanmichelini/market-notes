@@ -47,6 +47,19 @@ Data is fetched nightly via GitHub Actions, stored as plain CSV files under vers
 | WFP:PHL:RICE:METRO_MANILA | Rice (regular, milled), Philippines, Metro Manila retail (USD/kg, monthly) | WFP via HDX | 2000 |
 | WFP:IDN:RICE:BADUNG | Rice (medium quality), Indonesia, Pasar Badung retail (USD/kg, monthly) | WFP via HDX | 2016 |
 | WFP:PAK:RICE:KARACHI | Rice (coarse), Pakistan, Karachi retail (USD/kg, monthly) | WFP via HDX | 2006 |
+| WFP:MLI:RICE:NIARELA | Rice (imported), Mali, Niarela retail (USD/kg, monthly) | WFP via HDX | 2003 |
+| WFP:MLI:MAIZE:NIARELA | Maize, Mali, Niarela retail (USD/kg, monthly) | WFP via HDX | 2003 |
+| WFP:MLI:SORGHUM:NIARELA | Sorghum, Mali, Niarela retail (USD/kg, monthly) | WFP via HDX | 2003 |
+| WFP:NER:RICE:MARADI | Rice (imported), Niger, Maradi retail (USD/kg, monthly) | WFP via HDX | 1990 |
+| WFP:NER:MAIZE:MARADI | Maize, Niger, Maradi retail (USD/kg, monthly) | WFP via HDX | 1994 |
+| WFP:NER:SORGHUM:MARADI | Sorghum, Niger, Maradi retail (USD/kg, monthly) | WFP via HDX | 1990 |
+| WFP:COD:RICE:NYAWERA | Rice (imported), DR Congo, Nyawera retail (USD/kg, monthly) | WFP via HDX | 2008 |
+| WFP:COD:CASSAVA:NYAWERA | Cassava flour, DR Congo, Nyawera retail (USD/kg, monthly) | WFP via HDX | 2008 |
+| WFP:COD:WHEAT_FLOUR:NYAWERA | Wheat flour, DR Congo, Nyawera retail (USD/kg, monthly) | WFP via HDX | 2008 |
+| WFP:COD:MAIZE_FLOUR:NYAWERA | Maize flour, DR Congo, Nyawera retail (USD/kg, monthly) | WFP via HDX | 2008 |
+| WFP:BDI:SWEET_POTATOES:GITEGA | Sweet potatoes, Burundi, Gitega retail (USD/kg, monthly) | WFP via HDX | 2003 |
+| WFP:BDI:CASSAVA:GITEGA | Cassava flour, Burundi, Gitega retail (USD/kg, monthly) | WFP via HDX | 2003 |
+| WFP:BDI:MAIZE:GITEGA | Maize (white), Burundi, Gitega retail (USD/kg, monthly) | WFP via HDX | 2009 |
 | CPIAUCSL | US CPI (All Urban Consumers, Seas. Adj.)    | FRED          | 2006 |
 
 ---
